@@ -1,7 +1,11 @@
 ======================
 raspberrypi_raw_camera
 ======================
-Acquire RAW images with Raspberry Pi camera (before demosaicking)
+Acquire RAW images with Raspberry Pi camera (before demosaicking).
+
+The `picamera.array.PiBayerArray method <http://picamera.readthedocs.org/en/release-1.10/_modules/picamera/array.html#PiArrayOutput>`_ destripes the raw data and puts it into a stacked 3-D matrix (not demosaicked). Dimensions 1944x1592x3. If you use ImageJ, menu Image > Type > RGB Stack you can see the checkerboard effect this makes. Red is lower left, Green is upper left and lower right, Blue is upper right.
+
+If you don't like this destriped version, let me know and I'll make an option to leave it striped like my Sumix program does. That is, to return a 3888x5184 2-D array.
 
 Prereqs
 =======
