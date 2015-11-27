@@ -31,6 +31,7 @@ With timing:
 RGB Demosaicked Image
 ---------------------
 ::
+
     ./bayer.py outrgb.png --demosaic
 
 With timing:
