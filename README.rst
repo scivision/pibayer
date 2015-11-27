@@ -20,7 +20,7 @@ RAW Bayer filtered image
 ------------------------
 ::
 
-    ./bayer.py outraw.png
+    ./getrawimage.py outraw.png
 
 With timing:
 
@@ -36,7 +36,7 @@ RGB Demosaicked Image
 ---------------------
 ::
 
-    ./bayer.py outrgb.png --demosaic
+    ./getrawimage.py outrgb.png --demosaic
 
 With timing:
 
