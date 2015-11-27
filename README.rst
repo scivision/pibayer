@@ -17,7 +17,7 @@ Prereqs
 Examples
 ========
 There are more efficient ways to do this. The examples capture a single frame and write to disk.
-The times given with with a non-overclocked Raspberry Pi 2, Debian Jessie, kernel 4.1.7, Python 3.4.2, SciPy 0.14
+The times given with a non-overclocked Raspberry Pi 2, Debian Jessie, kernel 4.1.7, Python 3.4.2, SciPy 0.14
 In real use we'd think of smarter ways to speed things up.
 
 
