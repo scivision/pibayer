@@ -23,9 +23,13 @@ RAW Bayer filtered image
     ./bayer.py outraw.png
 
 With timing:
+
 0.2 sec to load API
+
 2.5 sec to capture frame.
+
 3.1 sec for 10->8 bit
+
 8.0 sec for writing image to file
 
 RGB Demosaicked Image
@@ -35,9 +39,14 @@ RGB Demosaicked Image
     ./bayer.py outrgb.png --demosaic
 
 With timing:
+
 0.2 sec to load API
+
 2.5 sec to capture frame.
+
 10.0 sec to demosaic.
+
 3.1 sec for 10->8 bit
+
 12.0 sec for writing image to file
 
