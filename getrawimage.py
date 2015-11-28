@@ -9,75 +9,70 @@ Notes:
 Michael Hirsch
 https://scivision.co
 """
-from time import time
+from __future__ import division,absolute_import
+from time import sleep,time
 from scipy.misc import bytescale,imsave
+from matplotlib.pyplot import figure,draw,pause
 #
 from picamera import PiCamera
-import picamera.array as camarray
+#
+from params import getparams,setparams
+from rawbayer import grabframe
 
-def pibayerraw(fn,demosaic,quiet):
-    tic = time()
+def pibayerraw(fn,exposure_sec,bit8,plot):
     with PiCamera() as cam: #load camera driver
-        setparams(cam)
+        print('camera startup gain autocal')
+        sleep(0.75) # somewhere between 0.5..0.75 seconds to let camera settle to final gain value.
+        setparams(cam,exposure_sec) #wait till after sleep() so that gains settle before turning off auto
         getparams(cam)
-        with camarray.PiBayerArray(cam) as S: #prepare to read raw
-            if not quiet:
-                print('{:.1f} sec to load API'.format(time()-tic));tic=time()
-            cam.capture(S, 'jpeg', bayer=True) #grab single raw frame
-            if not quiet: 
-                print('{:.1f} sec to capture frame.'.format(time()-tic)); tic=time()
-#%% optional demosaic (raw->RGB)    
-            if demosaic:
-                img10 = S.demosaic()
-                if not quiet: 
-                    print('{:.1f} sec to demosaic.'.format(time()-tic)); tic=time()
+#%% optional setup plot
+        if plot:
+            fg = figure()
+            ax=fg.gca()
+            hi = ax.imshow(bayersum(grabframe(cam)),cmap='gray')
+            fg.colorbar(hi,ax=ax)
+#%% main loop
+        while True:
+#            tic = time()
+            img10 = grabframe(cam)
+#            print('{:.1f} sec. to grab frame'.format(time()-tic))
+#%% linear scale 10-bit to 8-bit
+            if bit8:
+                img = bytescale(img10,0,1024,255,0)
             else:
-                img10 = S.array
-    print(img10.shape)
-#%% linear scale 10-bit to 8-bit 
-    img8 = bytescale(img10,0,1024,255,0)
-    if not quiet: 
-        print('{:.1f} sec for 10->8 bit'.format(time()-tic));tic=time()
+                img = img10
+#%% sum Bayer pixel quads (this is NOT a typical grayscale conversion)
+#            tic = time()
+            bsum = bayersum(img) #0.09 sec
+#            print('{:.2f} sec. to sum quad-pixel Bayer groups'.format(time()-tic))
+            if plot:
+#                tic = time()
+                hi.set_data(bsum) #2.7 sec
+                draw(); pause(0.01)
+#                print('{:.1f} sec. to update plot'.format(time()-tic))
 #%% write to PNG or JPG or whatever based on file extension
-    if fn:
-        imsave(fn,img8)
-        if not quiet: 
-            print('{:.1f} sec for writing image to file'.format(time()-tic))
+            if fn:
+                imsave(fn,bsum)
+                break
 
-    return img10,img8    
-            
-def setparams(c):
-    c.awb_mode ='off' #auto white balance
-#   c.brightness(50)
-#   c.contrast(0)
-    c.drc_strength = 'off'
-    c.image_denoise = False
-    c.image_effect = 'none'
+    return bsum,img
 
-def getparams(c):
-    print('analog / digital gain {} / {}'.format(c.analog_gain,c.digital_gain))
-    print('auto white balance {}'.format(c.awb_mode))
-    print('brightness {}'.format(c.brightness))
-    print('contrast {}'.format(c.contrast))    
-    print('dynamic range compression {}'.format(c.drc_strength))
-    print('exposure compensation {}'.format(c.exposure_compensation))
-    print('exposure mode {}'.format(c.exposure_mode))
-    print('exposure / shutter speed {} / {}'.format(c.exposure_speed,c.shutter_speed))
-    print('image denoise {}'.format(c.image_denoise))    
-    print('image effect {}'.format(c.image_effect))
-    print('ISO {}'.format(c.iso))
-    print('exposure metering mode {}'.format(c.meter_mode))
-    print('rotation angle {}'.format(c.rotation))
-    print('saturation {}'.format(c.saturation))
-    print('sharpness {}'.format(c.sharpness))
+def bayersum(I):
+    return  (I[1::2,0::2] +   #red
+                  (I[0::2,0::2] + I[1::2,1::2]) / 2 +    #green
+                  I[0::2,1::2])
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
     p = ArgumentParser(description='Raspberry Pi Picamera demo with raw Bayer data')
-    p.add_argument('-q','--quiet',help="don't give timing info",action='store_true')
-    p.add_argument('--demosaic',help='return demosaiced RGB image instead of raw Bayer data',action='store_true')
-    p.add_argument('filename',help='output filename to write [png,jpg]')
+    p.add_argument('-e','--exposure',help='exposure time [seconds]',type=float)
+    p.add_argument('-8','--bit8',help="convert output to 8-bit",action='store_true')
+    p.add_argument('filename',help='output filename to write [png,jpg]',nargs='?')
+    p.add_argument('-p','--plot',help='show live plot',action='store_true')
     p = p.parse_args()
-
-    img10,img8 = pibayerraw(p.filename,p.demosaic,p.quiet)
-    
+   
+    try:
+        print('press Ctrl c  to end program')
+        bsum,img = pibayerraw(p.filename, p.exposure,p.bit8, p.plot)
+    except KeyboardInterrupt:
+        pass
