@@ -29,6 +29,13 @@ RAW Bayer filtered image save to disk
 
     ./getrawimage.py out.png
 
+Command-Line Options
+===================
+
+-p                      use Matplotlib for live (5 seconds per frame) display
+-e exp_sec      manually set exposure time, up to one second (TODO there are still some auto-set gains)
+-8                      output 8-bit array instead of default 10-bit array
+
 
 Reference
 ========
