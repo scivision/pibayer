@@ -39,9 +39,8 @@ Command-Line Options
 
 Reference
 ========
-The `picamera.array.PiBayerArray method <http://picamera.readthedocs.org/en/release-1.10/_modules/picamera/array.html#PiArrayOutput>`_ destripes the raw data and puts it into a stacked 3-D matrix (not demosaicked). 
-Dimensions 1944 x 2592 x 3. 
-If you use ImageJ, menu Image > Type > RGB Stack you can see the checkerboard effect this makes. Red is upper left, Green is lower left and upper right, Blue is lower right.
+The `picamera.array.PiBayerArray method <http://picamera.readthedocs.org/en/release-1.10/_modules/picamera/array.html#PiArrayOutput>`_ destripes the raw data and puts it into a  2-D matrix (not demosaicked). 
+Dimensions 1944 x 2592.
 
-I didn't like that behavior, so with their code as an inspiration I made ``rawbayer.py`` that retrieves the image as a 1944 x 2592 2-D array.
+The output ``bsum`` is these groups of 4 pixels summed, yielding a 972x1296 pixel array.
 
