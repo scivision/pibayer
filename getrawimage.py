@@ -4,20 +4,19 @@ Demo of reading raw Bayer 10-bit data from Raspberry Pi camera chip using PiCame
 Notes:
 1) can only read full chip, no binning or ROI: 2592x1944 pixel image with current imaging chip
 2) captures a single image
-3) sudo apt-get install python3-picamera python3-scipy
+3) sudo apt-get install python3-picamera
 
 Michael Hirsch
 https://scivision.co
 """
 from __future__ import division,absolute_import
-from time import sleep,time
+from time import sleep
 from scipy.misc import bytescale,imsave
 from matplotlib.pyplot import figure,draw,pause
 #
 from picamera import PiCamera
 #
-from params import getparams,setparams
-from rawbayer import grabframe
+from pibayer import getparams,setparams, grabframe
 
 def pibayerraw(fn,exposure_sec,bit8,plot):
     with PiCamera() as cam: #load camera driver

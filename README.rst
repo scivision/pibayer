@@ -5,11 +5,11 @@ Acquire RAW images with Raspberry Pi camera (before demosaicking).
 
 .. contents::
 
-Prereqs
+setup
 =======
 ::
     
-    sudo apt-get install python3-scipy python3-picamera
+    python setup.py develop
 
 Examples
 ========
