@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 from setuptools import setup
-import subprocess
+import subprocess,sys,os
 
 with open('requirements.txt', 'r') as f:
     req = f.read().split('\n')
-    req = ['python3-'+r for r in req if r]
+    req = [os.path.basename(sys.executable)+'-'+r for r in req if r]
 
 try:
     cmd = ['sudo','apt-get','install'] + req
@@ -16,8 +16,9 @@ except Exception as e:
 
 setup(name='pibayer',
 	  description='Python raw Bayer data from raspberry Pi camera',
-	  url='https://github.com/scivision/raspberrypi_raw_camera/blob/master/rawbayer.py',
+	  url='https://github.com/scivision/raspberrypi_raw_camera/',
       install_requires=['pathlib2'],
+      packages=['pibayer']
 	  )
 
 if not ok:
