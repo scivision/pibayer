@@ -1,7 +1,0 @@
-setuptools
-nose
-six
-numpy
-scipy
-matplotlib
-picamera

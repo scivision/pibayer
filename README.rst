@@ -7,18 +7,19 @@ Acquire RAW images with Raspberry Pi camera (before demosaicking).
 
 setup
 =======
-::
-    
+This is meant to be installed directly on the Raspberry Pi::
+
+    sudo apt install python3-numpy python3-matplotlib python3-picamera
+
     python setup.py develop
 
 Examples
 ========
 There are more efficient ways to do this.
-
-Would like to get better control of fixed exposure times.
+Would like to get better control of "fixed" exposure times.
 
 RAW Bayer filtered image stream displayed on screen via Matplotlib
---------------------------------------------------------------------------------
+-------------------------------------------------------------------
 ::
 
     ./getrawimage.py -p
@@ -39,8 +40,8 @@ Command-Line Options
 
 Reference
 ========
-In contrast to the 3-D array returned by the `picamera.array.PiBayerArray method <http://picamera.readthedocs.org/en/release-1.10/_modules/picamera/array.html#PiArrayOutput>`_ method, 
-my program collects the raw Bayer data and puts it into a  2-D matrix (not demosaicked). 
+In contrast to the 3-D array returned by the `picamera.array.PiBayerArray method <http://picamera.readthedocs.org/en/release-1.10/_modules/picamera/array.html#PiArrayOutput>`_ method,
+my program collects the raw Bayer data and puts it into a  2-D matrix (not demosaicked).
 Dimensions 1944 x 2592.
 
 The output ``bsum`` is these groups of 4 pixels summed, yielding a 972x1296 pixel array.
