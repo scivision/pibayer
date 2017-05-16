@@ -3,6 +3,11 @@ raspberrypi_raw_camera
 ======================
 Acquire RAW images with Raspberry Pi camera (before demosaicking).
 
+NOTE: The PiCamera API has updated since I wrote this, there are substantially faster processing methods now available.
+Let me know if you're interested.
+
+:author: Michael Hirsch, Ph.D.
+
 .. contents::
 
 setup
