@@ -5,7 +5,7 @@ from picamera import PiCamera
 from time import sleep
 from matplotlib.pyplot import figure,draw,pause
 
-def pibayerraw(exposure_sec, bit8=False, plot=False):
+def pibayerraw(exposure_sec, bit8=False, sumquad=False, plot=False):
   """
     loop image acquisition, optionally plotting
 
@@ -22,11 +22,7 @@ def pibayerraw(exposure_sec, bit8=False, plot=False):
         setparams(cam, exposure_sec) #wait till after sleep() so that gains settle before turning off auto
         getparams(cam)
 #%% optional setup plot
-        if plot:
-            fg = figure()
-            ax=fg.gca()
-            hi = ax.imshow(bayersum(grabframe(cam)),cmap='gray')
-            fg.colorbar(hi,ax=ax)
+        hi = _setupfig(cam,plot,sumquad)
 #%% main loop
         while True:
 #            tic = time()
@@ -39,7 +35,10 @@ def pibayerraw(exposure_sec, bit8=False, plot=False):
                 img = img10
 #%% sum Bayer pixel quads (this is NOT a typical grayscale conversion)
 #            tic = time()
-            bsum = bayersum(img) #0.09 sec
+            if sumquad:
+                bsum = bayersum(img) #0.09 sec
+            else:
+                bsum = img
 #            print('{:.2f} sec. to sum quad-pixel Bayer groups'.format(time()-tic))
             if plot:
 #                tic = time()
@@ -51,9 +50,27 @@ def pibayerraw(exposure_sec, bit8=False, plot=False):
     return bsum,img
 
 def bayersum(I):
+    """
+    normally you would demosaick instead of this
+    https://github.com/scivision/pysumix/blob/master/pysumix/demosaic.py
+    """
     return  (I[1::2,0::2] +   #red
             (I[0::2,0::2] + I[1::2,1::2]) / 2 +    #green
              I[0::2,1::2])
+
+def _setupfig(cam,plot,sumquad):
+
+    if plot:
+        fg = figure()
+        ax=fg.gca()
+
+        if sumquad:
+            bsum = bayersum(grabframe(cam)) #0.09 sec
+        else:
+            bsum = grabframe(cam)
+
+        hi = ax.imshow(bsum, cmap='gray')
+        fg.colorbar(hi,ax=ax)
 
 def sixteen2eight(I,Clim):
     """
