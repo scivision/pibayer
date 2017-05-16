@@ -101,9 +101,14 @@ def normframe(I,Clim):
 def grabframe(cam):
     """
     http://picamera.readthedocs.org/en/release-1.10/recipes2.html#bayer-data
+
+    https://picamera.readthedocs.io/en/release-1.13/api_camera.html#picamera.PiCamera.capture
+
+    TODO use more efficient buffer (not BytesIO) output (new in PiCamera 1.11)
     """
     S = BytesIO()
     #tic = time()
+
     cam.capture(S, format='jpeg', bayer=True) #0.6 sec
     #print('{:.1f} sec to capture & retrieve image'.format(time()-tic))
 # %% take the last 6404096 bytes
