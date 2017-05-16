@@ -29,25 +29,19 @@ RAW Bayer filtered image stream displayed on screen via Matplotlib
 
     ./getrawimage.py -p
 
-RAW Bayer filtered image save to disk
----------------------------------------------
-::
-
-    ./getrawimage.py out.png
 
 Command-Line Options
 ===================
 
--p                      use Matplotlib for live (5 seconds per frame) display
--e exp_sec      manually set exposure time, up to one second (TODO there are still some auto-set gains)
--8                      output 8-bit array instead of default 10-bit array
-
+-p            use Matplotlib for live (5 seconds per frame) display
+-e exp_sec    manually set exposure time, up to one second (TODO there are still some auto-set gains)
+-8            output 8-bit array instead of default 10-bit array
+-sum          output ``bsum`` is groups of 4 pixels summed, yielding 972 x 1296 pixel array instead of the raw 1944 x 2592 array.
 
 Reference
 ========
 In contrast to the 3-D array returned by the `picamera.array.PiBayerArray method <http://picamera.readthedocs.org/en/release-1.10/_modules/picamera/array.html#PiArrayOutput>`_ method,
-my program collects the raw Bayer data and puts it into a  2-D matrix (not demosaicked).
+my program collects the raw Bayer data and puts it into a 2-D matrix (not demosaicked).
 Dimensions 1944 x 2592.
 
-The output ``bsum`` is these groups of 4 pixels summed, yielding a 972x1296 pixel array.
 
