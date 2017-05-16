@@ -14,6 +14,10 @@ def pibayerraw(exposure_sec, bit8=False, sumquad=False, plot=False):
 
     http://picamera.readthedocs.io/en/release-1.13/recipes1.html?highlight=close#capturing-to-a-pil-image
     if you wish to save image(s)
+
+    Demosaick reference:
+        https://github.com/scivision/pysumix/blob/master/pysumix/demosaic.py#L58
+        may need adaptation for Raspberry Pi camera
   """
   try:
     with PiCamera() as cam: #load camera driver
