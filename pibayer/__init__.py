@@ -1,7 +1,6 @@
-from __future__ import division
-from io import BytesIO
 import numpy as np
-from picamera import PiCamera
+import picamera
+import picamera.array
 from time import sleep
 from matplotlib.pyplot import figure,draw,pause
 
@@ -20,7 +19,7 @@ def pibayerraw(exposure_sec, bit8=False, sumquad=False, plot=False):
         may need adaptation for Raspberry Pi camera
   """
   try:
-    with PiCamera() as cam: #load camera driver
+    with picamera.PiCamera() as cam: #load camera driver
         print('camera startup gain autocal')
         sleep(0.75) # somewhere between 0.5..0.75 seconds to let camera settle to final gain value.
         setparams(cam, exposure_sec) #wait till after sleep() so that gains settle before turning off auto
@@ -38,29 +37,23 @@ def pibayerraw(exposure_sec, bit8=False, sumquad=False, plot=False):
             else:
                 img = img10
 #%% sum Bayer pixel quads (this is NOT a typical grayscale conversion)
-#            tic = time()
-            if sumquad:
-                bsum = bayersum(img) #0.09 sec
-            else:
-                bsum = img
-#            print('{:.2f} sec. to sum quad-pixel Bayer groups'.format(time()-tic))
             if plot:
 #                tic = time()
-                hi.set_data(bsum) #2.7 sec
+                hi.set_data(img) #2.7 sec
                 draw(); pause(0.01)
 #                print('{:.1f} sec. to update plot'.format(time()-tic))
 
   except KeyboardInterrupt:
-    return bsum,img
+    return img
 
-def bayersum(I):
-    """
-    normally you would demosaick instead of this
-    https://github.com/scivision/pysumix/blob/master/pysumix/demosaic.py
-    """
-    return  (I[1::2,0::2] +   #red
-            (I[0::2,0::2] + I[1::2,1::2]) / 2 +    #green
-             I[0::2,1::2])
+
+def grabframe(cam):
+
+    with picamera.array.PiBayerArray(cam) as S:
+        cam.capture(S, 'jpeg', bayer=True)
+
+    return S.array
+
 
 def _setupfig(cam,plot,sumquad):
 
@@ -68,13 +61,11 @@ def _setupfig(cam,plot,sumquad):
         fg = figure()
         ax=fg.gca()
 
-        if sumquad:
-            bsum = bayersum(grabframe(cam)) #0.09 sec
-        else:
-            bsum = grabframe(cam)
+        img = grabframe(cam)
 
-        hi = ax.imshow(bsum, cmap='gray')
+        hi = ax.imshow(img, cmap='gray')
         fg.colorbar(hi,ax=ax)
+
 
 def sixteen2eight(I,Clim):
     """
@@ -90,6 +81,7 @@ def sixteen2eight(I,Clim):
     Q *= 255 # stretch to [0,255] as a float
     return Q.round().astype(np.uint8) # convert to uint8
 
+
 def normframe(I,Clim):
     """
     inputs:
@@ -102,45 +94,6 @@ def normframe(I,Clim):
 
     return (I.astype(np.float32).clip(Vmin, Vmax) - Vmin) / (Vmax - Vmin) #stretch to [0,1]
 
-def grabframe(cam):
-    """
-    http://picamera.readthedocs.org/en/release-1.10/recipes2.html#bayer-data
-
-    https://picamera.readthedocs.io/en/release-1.13/api_camera.html#picamera.PiCamera.capture
-
-    TODO use more efficient buffer (not BytesIO) output (new in PiCamera 1.11)
-    """
-    S = BytesIO()
-    #tic = time()
-
-    cam.capture(S, format='jpeg', bayer=True) #0.6 sec
-    #print('{:.1f} sec to capture & retrieve image'.format(time()-tic))
-# %% take the last 6404096 bytes
-    data = S.getvalue()[-6404096:]
-    assert data[:4] == b'BRCM', 'Unable to locate Bayer data at end of buffer'
-# %% Strip header
-    data = data[32768:]
-# %% Reshape into 2D pixels 3264x1952, then throw away blank rightmost 24 columns and bottom 8 rows.
-    data = np.frombuffer(data, dtype=np.uint8).reshape((1952, 3264))[:1944, :3240]
-# %% Unpack 10-bit values
-    """
-    every 5 bytes contains the high 8-bits of 4 values followed by
-    the low 2-bits of 4 values packed into the fifth byte
-    """
-    data = data.astype(np.uint16) << 2
-    #tic = time()
-    for byte in range(4): #0.3 sec
-        data[:, byte::5] |= ((data[:, 4::5] >> ((4 - byte) * 2)) & 3)
- #   print('{:.1f} sec to unpack 10-bit data'.format(time()-tic))
-    #data = delete(data, s_[4::5], axis=1) #1.2 sec.
-# %% let's speed up elimination of the fifth byte columns -- 1.0 sec instead of 1.2 sec with np.delete
-  #      tic = time()
-    colmask = np.ones(data.shape[1]).astype(bool)
-    colmask[np.s_[4::5]]=False
-    data = data[:,colmask]
-#        print('{:.1f} sec to eliminate fifth byte columns'.format(time()-tic))
-
-    return data
 
 def setparams(c, exposure_sec=None):
     c.awb_mode ='off' #auto white balance
@@ -155,6 +108,7 @@ def setparams(c, exposure_sec=None):
     c.drc_strength = 'off'
     c.image_denoise = False
     c.image_effect = 'none'
+
 
 def getparams(c):
     print('analog , digital gain',c.analog_gain,c.digital_gain)

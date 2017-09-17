@@ -11,4 +11,5 @@ setup(name='pibayer',
       author='Michael Hirsch, Ph.D.',
 	  description='Python raw Bayer data from raspberry Pi camera',
 	  url='https://github.com/scivision/raspberrypi_raw_camera/',
+      install_requires=['picamera'],
 	  )

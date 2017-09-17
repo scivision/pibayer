@@ -3,7 +3,7 @@
 Demo of reading raw Bayer 10-bit data from Raspberry Pi camera chip using PiCamera module.
 This code runs ON the Raspberry Pi directly.
 
-* can only read full chip, no binning or ROI: 2592x1944 pixel image with current imaging chip
+* can only read full chip, no binning or ROI
 
 Michael Hirsch, Ph.D.
 https://scivision.co
@@ -20,5 +20,5 @@ if __name__ == '__main__':
     p = p.parse_args()
 
     print('press Ctrl C  to end program')
-    bsum,img = pibayerraw(p.exposure, p.bit8, p.sum, p.plot)
+    img = pibayerraw(p.exposure, p.bit8, p.sum, p.plot)
 
