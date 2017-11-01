@@ -16,7 +16,6 @@ if __name__ == '__main__':
     p.add_argument('-e','--exposure',help='exposure time [seconds]',type=float)
     p.add_argument('-8','--bit8',help="convert output to 8-bit",action='store_true')
     p.add_argument('-p','--plot',help='show live plot',action='store_true')
-    p.add_argument('-sum',help='sum Bayer pixel quad (not the usual demosaicking',action='store_true')
     p = p.parse_args()
 
     print('press Ctrl C  to end program')

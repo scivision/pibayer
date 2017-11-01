@@ -3,9 +3,6 @@ raspberrypi_raw_camera
 ======================
 Acquire RAW images with Raspberry Pi camera (before demosaicking).
 
-NOTE: The PiCamera API has updated since I wrote this, there are substantially faster processing methods now available.
-Let me know if you're interested.
-
 :author: Michael Hirsch, Ph.D.
 
 .. contents::
@@ -14,29 +11,28 @@ setup
 =======
 This is meant to be installed directly on the Raspberry Pi::
 
-    sudo apt install python3-numpy python3-matplotlib python3-picamera
+    apt install python3-numpy python3-matplotlib python3-picamera
 
-    python setup.py develop
+    python3 setup.py develop --user
 
 Examples
 ========
 There are more efficient ways to do this.
 Would like to get better control of "fixed" exposure times.
 
-RAW Bayer filtered image stream displayed on screen via Matplotlib
--------------------------------------------------------------------
+RAW live video display
+----------------------
 ::
 
     ./getrawimage.py -p
 
 
 Command-Line Options
-===================
+====================
 
 -p            use Matplotlib for live (5 seconds per frame) display
 -e exp_sec    manually set exposure time, up to one second (TODO there are still some auto-set gains)
 -8            output 8-bit array instead of default 10-bit array
--sum          output ``bsum`` is groups of 4 pixels summed, yielding 972 x 1296 pixel array instead of the raw 1944 x 2592 array.
 
 Reference
 ========

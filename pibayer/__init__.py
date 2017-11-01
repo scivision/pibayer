@@ -4,7 +4,7 @@ import picamera.array
 from time import sleep
 from matplotlib.pyplot import figure,draw,pause
 
-def pibayerraw(exposure_sec, bit8=False, sumquad=False, plot=False):
+def pibayerraw(exposure_sec, bit8:bool=False, plot:bool=False):
   """
     loop image acquisition, optionally plotting
 
@@ -25,7 +25,7 @@ def pibayerraw(exposure_sec, bit8=False, sumquad=False, plot=False):
         setparams(cam, exposure_sec) #wait till after sleep() so that gains settle before turning off auto
         getparams(cam)
 #%% optional setup plot
-        hi = _setupfig(cam,plot,sumquad)
+        hi = _setupfig(cam,plot)
 #%% main loop
         while True:
 #            tic = time()
@@ -40,7 +40,8 @@ def pibayerraw(exposure_sec, bit8=False, sumquad=False, plot=False):
             if plot:
 #                tic = time()
                 hi.set_data(img) #2.7 sec
-                draw(); pause(0.01)
+                draw()
+                pause(0.01)
 #                print('{:.1f} sec. to update plot'.format(time()-tic))
 
   except KeyboardInterrupt:
@@ -55,7 +56,7 @@ def grabframe(cam):
     return S.array
 
 
-def _setupfig(cam,plot,sumquad):
+def _setupfig(cam, plot:bool):
 
     if plot:
         fg = figure()
@@ -67,7 +68,7 @@ def _setupfig(cam,plot,sumquad):
         fg.colorbar(hi,ax=ax)
 
 
-def sixteen2eight(I,Clim):
+def sixteen2eight(I, Clim:tuple):
     """
     scipy.misc.bytescale had bugs
 
@@ -82,7 +83,7 @@ def sixteen2eight(I,Clim):
     return Q.round().astype(np.uint8) # convert to uint8
 
 
-def normframe(I,Clim):
+def normframe(I, Clim:tuple):
     """
     inputs:
     -------
@@ -90,7 +91,8 @@ def normframe(I,Clim):
     Clim: length 2 of tuple or numpy 1-D array specifying lowest and highest expected values in grayscale image
     Michael Hirsch, Ph.D.
     """
-    Vmin = Clim[0]; Vmax = Clim[1]
+    Vmin = Clim[0]
+    Vmax = Clim[1]
 
     return (I.astype(np.float32).clip(Vmin, Vmax) - Vmin) / (Vmax - Vmin) #stretch to [0,1]
 
