@@ -11,6 +11,9 @@ https://scivision.co
 from pibayer import pibayerraw
 
 if __name__ == '__main__':
+    import signal
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+    
     from argparse import ArgumentParser
     p = ArgumentParser(description='Raspberry Pi Picamera demo with raw Bayer data')
     p.add_argument('-e','--exposure',help='exposure time [seconds]',type=float)
