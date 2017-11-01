@@ -53,7 +53,11 @@ def grabframe(cam):
     with picamera.array.PiBayerArray(cam) as S:
         cam.capture(S, 'jpeg', bayer=True)
 
-    return S.array
+        img = S.array  # must be under 'with'
+
+    assert isinstance(img,np.ndarray)
+
+    return img
 
 
 def _setupfig(cam, plot:bool):

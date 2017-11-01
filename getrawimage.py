@@ -22,5 +22,5 @@ if __name__ == '__main__':
     p = p.parse_args()
 
     print('press Ctrl C  to end program')
-    img = pibayerraw(p.exposure, p.bit8, p.sum, p.plot)
+    img = pibayerraw(p.exposure, p.bit8, p.plot)
 
