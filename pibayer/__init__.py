@@ -1,8 +1,8 @@
 import numpy as np
-import picamera
-import picamera.array
 from time import sleep
 from matplotlib.pyplot import figure,draw,pause
+from picamera import PiCamera
+import picamera.array
 
 def pibayerraw(exposure_sec, bit8:bool=False, plot:bool=False):
   """
@@ -19,7 +19,7 @@ def pibayerraw(exposure_sec, bit8:bool=False, plot:bool=False):
         may need adaptation for Raspberry Pi camera
   """
   try:
-    with picamera.PiCamera() as cam: #load camera driver
+    with PiCamera() as cam: #load camera driver
         print('camera startup gain autocal')
         sleep(0.75) # somewhere between 0.5..0.75 seconds to let camera settle to final gain value.
         setparams(cam, exposure_sec) #wait till after sleep() so that gains settle before turning off auto
@@ -32,11 +32,8 @@ def pibayerraw(exposure_sec, bit8:bool=False, plot:bool=False):
             img10 = grabframe(cam)
 #            print('{:.1f} sec. to grab frame'.format(time()-tic))
 #%% linear scale 10-bit to 8-bit
-            if bit8:
-                img = sixteen2eight(img10,(0,1024))
-            else:
-                img = img10
-#%% sum Bayer pixel quads (this is NOT a typical grayscale conversion)
+            img = sixteen2eight(img10,(0,2**10)) if bit8 else img10
+#%% plot
             if plot:
 #                tic = time()
                 hi.set_data(img) #2.7 sec
@@ -48,19 +45,19 @@ def pibayerraw(exposure_sec, bit8:bool=False, plot:bool=False):
     return img
 
 
-def grabframe(cam):
+def grabframe(cam:PiCamera):
 
-    with picamera.array.PiBayerArray(cam) as S:
+    with picamera.array.PiBayerArray(cam, output_dims=2) as S:
         cam.capture(S, 'jpeg', bayer=True)
 
         img = S.array  # must be under 'with'
 
-    assert isinstance(img,np.ndarray)
+    assert isinstance(img,np.ndarray) and img.ndim == 2
 
     return img
 
 
-def _setupfig(cam, plot:bool):
+def _setupfig(cam:PiCamera, plot:bool):
 
     if plot:
         fg = figure()
@@ -72,7 +69,7 @@ def _setupfig(cam, plot:bool):
         fg.colorbar(hi,ax=ax)
 
 
-def sixteen2eight(I, Clim:tuple):
+def sixteen2eight(I:np.ndarray, Clim:tuple) -> np.ndarray:
     """
     scipy.misc.bytescale had bugs
 
@@ -87,7 +84,7 @@ def sixteen2eight(I, Clim:tuple):
     return Q.round().astype(np.uint8) # convert to uint8
 
 
-def normframe(I, Clim:tuple):
+def normframe(I:np.ndarray, Clim:tuple) -> np.ndarray:
     """
     inputs:
     -------
@@ -101,7 +98,7 @@ def normframe(I, Clim:tuple):
     return (I.astype(np.float32).clip(Vmin, Vmax) - Vmin) / (Vmax - Vmin) #stretch to [0,1]
 
 
-def setparams(c, exposure_sec=None):
+def setparams(c:PiCamera, exposure_sec:float=None):
     c.awb_mode ='off' #auto white balance
     c.awb_gains = (1,1.) # 0.0...8.0  (red,blue)
     c.exposure_mode = 'off'
@@ -116,14 +113,14 @@ def setparams(c, exposure_sec=None):
     c.image_effect = 'none'
 
 
-def getparams(c):
-    print('analog , digital gain',c.analog_gain,c.digital_gain)
+def getparams(c:PiCamera):
+    print('analog, digital gain',c.analog_gain,c.digital_gain)
     print('auto white balance, AWB gains', c.awb_mode,c.awb_gains)
     print('brightness, contrast',c.brightness,c.contrast)
     print('dynamic range compression', c.drc_strength)
     print('exposure compensation', c.exposure_compensation)
     print('exposure mode', c.exposure_mode)
-    print('exposure speed, shutter speed [microsec]',c.exposure_speed,c.shutter_speed)
+    print('exposure speed, shutter speed [μs]',c.exposure_speed,c.shutter_speed)
     print('image denoise', c.image_denoise)
     print('image effect', c.image_effect)
     print('ISO', c.iso)

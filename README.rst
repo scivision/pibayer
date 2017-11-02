@@ -36,8 +36,7 @@ Command-Line Options
 
 Reference
 ========
-In contrast to the 3-D array returned by the `picamera.array.PiBayerArray method <http://picamera.readthedocs.org/en/release-1.10/_modules/picamera/array.html#PiArrayOutput>`_ method,
-my program collects the raw Bayer data and puts it into a 2-D matrix (not demosaicked).
-Dimensions 1944 x 2592.
+
+`Constraints on exposure time <http://picamera.readthedocs.io/en/latest/fov.html#camera-modes>`_
 
 
