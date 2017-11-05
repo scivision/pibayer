@@ -1,7 +1,13 @@
+.. image:: https://api.codeclimate.com/v1/badges/66560126d66fb438a9d4/maintainability
+   :target: https://codeclimate.com/github/scivision/raspicam-raw-bayer/maintainability
+   :alt: Maintainability
+
 ======================
-raspberrypi_raw_camera
+raspicam-raw-bayer
 ======================
-Acquire RAW images with Raspberry Pi camera (before demosaicking).
+Acquire RAW Bayer-masked images with Raspberry Pi camera (before demosaicking).
+
+* writes HDF5 or TIFF compressed image stacks.
 
 :author: Michael Hirsch, Ph.D.
 
@@ -17,20 +23,29 @@ This is meant to be installed directly on the Raspberry Pi::
 
 Examples
 ========
-There are more efficient ways to do this.
-Would like to get better control of "fixed" exposure times.
 
 RAW live video display
 ----------------------
 ::
 
-    ./getrawimage.py -p
+    ./getrawimage.py -a
+    
+Dump image stack to disk
+------------------------
+HDF5::
+
+    ./getrawimage.py output.h5
+    
+TIFF::
+
+    ./getrawimage.py output.tif
 
 
 Command-Line Options
 ====================
 
--p            use Matplotlib for live (5 seconds per frame) display
+-a            GPU-based preview, for aiming camera (fast)
+-p            use Matplotlib for slow, live (10 seconds per frame) display
 -e exp_sec    manually set exposure time, up to one second (TODO there are still some auto-set gains)
 -8            output 8-bit array instead of default 10-bit array
 
