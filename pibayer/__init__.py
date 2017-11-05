@@ -77,6 +77,8 @@ def writeframe(f, i:int, img:np.ndarray):
 
     assert img.ndim == 2
 
+    print('writing image #',i)
+
     if isinstance(f, h5py.File):
         f[KEY][i,:,:] = img
     elif isinstance(f, tifffile.TiffWriter):
@@ -113,6 +115,8 @@ def _writesetup(outfn:Path, Nimg:int, img:np.ndarray):
         f = tifffile.TiffWriter(str(outfn), append=True)
     else:
         raise ValueError('unknown file type {}'.format(outfn))
+
+    print('writing',outfn)
 
     return f
 
