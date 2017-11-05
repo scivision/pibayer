@@ -118,7 +118,7 @@ def _writesetup(outfn:Path, Nimg:int, img:np.ndarray):
     elif outfn.suffix in ('.tif','.tiff'):
         if tifffile is None:
             raise ImportError('tifffile problem. Is it installed?')
-        f = tifffile.TiffWriter(str(outfn), append=True)
+        f = tifffile.TiffWriter(str(outfn)) # NO append keyword
     else:
         raise ValueError('unknown file type {}'.format(outfn))
 
