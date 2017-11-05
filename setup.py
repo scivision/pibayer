@@ -2,7 +2,7 @@
 """
 On Raspberry Pi:
 
-apt install python3-numpy python3-matplotlib python3-picamera python3-h5py
+apt install python3-nose python3-numpy python3-matplotlib python3-picamera python3-h5py
 
 pip install tifffile
 """
@@ -21,7 +21,7 @@ setup(name='pibayer',
       'Topic :: Scientific/Engineering :: Medical Science Apps.',
       'Programming Language :: Python :: 3',
       ],
-      install_requires=['picamera','numpy'],
+      install_requires=['picamera','numpy','nose'],
       extras_require={'write':['tifffile','h5py'],
                       'plot':['matplotlib']}
 	  )
