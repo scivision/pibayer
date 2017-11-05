@@ -54,7 +54,10 @@ def pibayerraw(Nimg:int, exposure_sec:float, bit8:bool=False,
 #%% plot--not recommended due to very slow 10 seconds update
                 updatepreview(img, hi, ht)
         except KeyboardInterrupt:
-            pass  # cleanup, close camera. Might need to press Ctrl C a couple times.
+            pass # cleanup, close camera. Might need to press Ctrl C a couple times.
+
+    if f is not None:
+        f.close()
 
 def grabframe(cam:PiCamera, bit8:bool=False):
 #   tic = time()
@@ -77,7 +80,7 @@ def writeframe(f, i:int, img:np.ndarray):
 
     assert img.ndim == 2
 
-    print('writing image #',i)
+    print('writing image #',i,'\r',end="",flush=True)
 
     if isinstance(f, h5py.File):
         f[KEY][i,:,:] = img
