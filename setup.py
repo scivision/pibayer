@@ -2,9 +2,9 @@
 """
 On Raspberry Pi:
 
-apt install python3-nose python3-numpy python3-matplotlib python3-picamera python3-h5py
+apt install python3-{nose,numpy,matplotlib,picamera,h5py}
 
-pip install tifffile
+pip install tifffile==0.6
 """
 from setuptools import setup
 
