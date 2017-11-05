@@ -40,11 +40,11 @@ def pibayerraw(Nimg:int, exposure_sec:float, bit8:bool=False,
         setparams(cam, exposure_sec) #wait till after sleep() so that gains settle before turning off auto
         getparams(cam)
 #%% optional setup plot
-        hi,ht = _preview(cam, preview)
+        hi,ht = _preview(cam, preview, bit8)
         if preview=='gpu':
             return
 #%% optional setup output file
-        f = _writesetup(outfn)
+        f = _writesetup(outfn, Nimg, grabframe(cam, bit8))
 #%% main loop
         try:
             for i in range(Nimg):
@@ -93,7 +93,7 @@ def updatepreview(img, hi, ht):
 #       print('{:.1f} sec. to update plot'.format(time()-tic))
 
 
-def _writesetup(outfn:Path):
+def _writesetup(outfn:Path, Nimg:int, img:np.ndarray):
     if not outfn:
         return
 
@@ -104,6 +104,9 @@ def _writesetup(outfn:Path):
         if h5py is None:
             raise ImportError('h5py problem. Is it installed?')
         f = h5py.File(outfn,'w',libver='latest')
+        f.create_dataset(KEY,
+                         shape=(Nimg,img.shape[0],img.shape[1]),
+                         dtype=img.dtype)
     elif outfn.suffix in ('.tif','.tiff'):
         if tifffile is None:
             raise ImportError('tifffile problem. Is it installed?')
@@ -114,7 +117,7 @@ def _writesetup(outfn:Path):
     return f
 
 
-def _preview(cam:PiCamera, preview:str):
+def _preview(cam:PiCamera, preview:str, bit8:bool):
 
     hi=None; ht=None
 
@@ -122,7 +125,7 @@ def _preview(cam:PiCamera, preview:str):
         fg = figure()
         ax=fg.gca()
 
-        img = grabframe(cam)
+        img = grabframe(cam, bit8)
         print('image shape',img.shape)
 
         hi = ax.imshow(img, cmap='gray')
