@@ -6,7 +6,7 @@ from picamera import PiCamera
 import picamera.array
 
 def pibayerraw(exposure_sec:float, bit8:bool=False, plot:bool=False):
-  """
+    """
     loop image acquisition, optionally plotting
 
     see http://picamera.readthedocs.io/en/release-1.13/recipes1.html?highlight=close#recording-video-to-a-file
@@ -18,8 +18,7 @@ def pibayerraw(exposure_sec:float, bit8:bool=False, plot:bool=False):
     Demosaick reference:
         https://github.com/scivision/pysumix/blob/master/pysumix/demosaic.py#L58
         may need adaptation for Raspberry Pi camera
-  """
-  try:
+    """
     with PiCamera() as cam: #load camera driver
         print('camera startup gain autocal')
         sleep(0.75) # somewhere between 0.5..0.75 seconds to let camera settle to final gain value.
@@ -27,7 +26,7 @@ def pibayerraw(exposure_sec:float, bit8:bool=False, plot:bool=False):
         getparams(cam)
 #%% optional setup plot
         hi = _setupfig(cam,plot)
-#%% main loop
+#%% main loop, runs until Ctrl-C from user.
         while True:
 #            tic = time()
             img10 = grabframe(cam)
@@ -41,9 +40,6 @@ def pibayerraw(exposure_sec:float, bit8:bool=False, plot:bool=False):
                 draw()
                 pause(0.01)
 #                print('{:.1f} sec. to update plot'.format(time()-tic))
-
-  except KeyboardInterrupt:
-    return img
 
 
 def grabframe(cam:PiCamera):
@@ -68,6 +64,10 @@ def _setupfig(cam:PiCamera, plot:bool):
 
         hi = ax.imshow(img, cmap='gray')
         fg.colorbar(hi,ax=ax)
+
+        return hi
+    else:
+        print('Live video preview disabled.')
 
 
 def sixteen2eight(I:np.ndarray, Clim:tuple) -> np.ndarray:

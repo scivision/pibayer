@@ -8,6 +8,9 @@ This code runs ON the Raspberry Pi directly.
 Requires Python >= 3.5
 https://www.scivision.co/set-python-version-update-alternatives/
 
+UnicodeDecodeError?
+raspi-config, set locale: en_US.UTF-8 UTF-8  and same for default locale, then Reboot.
+
 Michael Hirsch, Ph.D.
 https://scivision.co
 """
