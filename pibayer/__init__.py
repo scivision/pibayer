@@ -38,7 +38,7 @@ def pibayerraw(exposure_sec:float, bit8:bool=False, plot:bool=False):
             if plot:
 #                tic = time()
                 hi.set_data(img) #2.7 sec
-                ht.set_string(str(datetime.now()))
+                ht.set_text(str(datetime.now()))
                 draw()
                 pause(0.01)
 #                print('{:.1f} sec. to update plot'.format(time()-tic))
@@ -118,8 +118,9 @@ def setparams(c:PiCamera, exposure_sec:float=None):
 
 
 def getparams(c:PiCamera):
-    print('analog, digital gain',c.analog_gain,c.digital_gain)
-    print('auto white balance, AWB gains', c.awb_mode,c.awb_gains)
+    # NOTE: str() avoids printing Fraction(5,3)
+    print('analog gain',c.analog_gain,'   digital gain',c.digital_gain)
+    print('auto white balance',str(c.awb_mode),'     AWB gains',str(c.awb_gains))
     print('brightness, contrast',c.brightness,c.contrast)
     print('dynamic range compression', c.drc_strength)
     print('exposure compensation', c.exposure_compensation)
