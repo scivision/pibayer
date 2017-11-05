@@ -47,7 +47,7 @@ def pibayerraw(exposure_sec:float, bit8:bool=False, preview:str=None):
                 pause(0.01)
 #                print('{:.1f} sec. to update plot'.format(time()-tic))
         except KeyboardInterrupt:
-          pass  # cleanup, close camera
+          pass  # cleanup, close camera. Might need to press Ctrl C a couple times.
 
 def grabframe(cam:PiCamera):
 
@@ -120,6 +120,7 @@ def normframe(I:np.ndarray, Clim:tuple) -> np.ndarray:
 
 
 def setparams(c:PiCamera, exposure_sec:float=None):
+    # http://picamera.readthedocs.io/en/release-1.10/recipes1.html#consistent-capture
     c.awb_mode ='off' #auto white balance
     c.awb_gains = (1,1.) # 0.0...8.0  (red,blue)
     c.exposure_mode = 'off'
