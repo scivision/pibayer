@@ -32,6 +32,8 @@ if __name__ == '__main__':
         preview = 'gpu'
     elif p.plot:
         preview = 'mpl'
+    else:
+        preview = None
 
     print('press Ctrl C  to end program')
     img = pibayerraw(p.numimg, p.exposure, p.bit8, preview, p.outfn)
