@@ -10,7 +10,7 @@ KEY = '/imgs'  # handle to write inside the output file
 CLVL = 1  # ZIP compression level
 
 def pibayerraw(Nimg:int, exposure_sec:float, bit8:bool=False,
-               preview:str=None, outfn:Path=None):
+               preview=None, outfn:Path=None):
     """
     loop image acquisition, optionally plotting
 
@@ -29,7 +29,7 @@ def pibayerraw(Nimg:int, exposure_sec:float, bit8:bool=False,
         getparams(cam)
 #%% optional setup plot
         hi,ht = _preview(cam, preview, bit8)
-        if preview=='gpu':
+        if isinstance(preview,(int,float)): # GPU preview
             return
 #%% optional setup output file
         f = _writesetup(outfn, Nimg, grabframe(cam, bit8))
@@ -115,11 +115,20 @@ def _writesetup(outfn:Path, Nimg:int, img:np.ndarray):
     return f
 
 
-def _preview(cam:PiCamera, preview:str, bit8:bool):
+def _preview(cam:PiCamera, preview, bit8:bool):
 
     hi=None; ht=None
 
-    if preview=='mpl':
+    if isinstance(preview,(int,float)):
+        print('Preview-only mode runs for ',preview,' seconds, or Ctrl-C.')
+        try:
+            cam.start_preview()
+            sleep(preview)
+        except KeyboardInterrupt:
+            cam.stop_preview()
+        finally:
+            cam.stop_preview()
+    elif preview=='mpl':
         from matplotlib.pyplot import figure
         fg = figure()
         ax=fg.gca()
@@ -131,16 +140,6 @@ def _preview(cam:PiCamera, preview:str, bit8:bool):
         fg.colorbar(hi,ax=ax)
         ht = ax.set_title('')
 
-    elif preview=='gpu':
-        tpre = 100
-        print('Preview-only mode runs for ',tpre,' seconds, or Ctrl-C.')
-        try:
-            cam.start_preview()
-            sleep(tpre)
-        except KeyboardInterrupt:
-            cam.stop_preview()
-        finally:
-            cam.stop_preview()
 
     return hi,ht
 

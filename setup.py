@@ -11,7 +11,7 @@ from setuptools import setup
 setup(name='pibayer',
       packages=['pibayer'],
       author='Michael Hirsch, Ph.D.',
-      version='0.5.0',
+      version='0.5.1',
 	  description='Acquire raw Bayer-masked image from Raspberry Pi camera and write to HDF5 or TIFF.',
 	  url='https://github.com/scivision/raspicam-raw-bayer',
       classifiers=[

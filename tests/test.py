@@ -22,7 +22,7 @@ def test_h5():
 def test_gpu():
     bit8 = False
 
-    pibayerraw(Nimg, exposure_sec, bit8, preview='gpu')
+    pibayerraw(Nimg, exposure_sec, bit8, preview=5.)
 
 
 def test_matplotlib():
