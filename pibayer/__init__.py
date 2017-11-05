@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 from time import sleep
 from matplotlib.pyplot import figure,draw,pause
 from picamera import PiCamera
 import picamera.array
 
-def pibayerraw(exposure_sec, bit8:bool=False, plot:bool=False):
+def pibayerraw(exposure_sec:float, bit8:bool=False, plot:bool=False):
   """
     loop image acquisition, optionally plotting
 

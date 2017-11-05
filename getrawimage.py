@@ -1,9 +1,12 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Demo of reading raw Bayer 10-bit data from Raspberry Pi camera chip using PiCamera module.
 This code runs ON the Raspberry Pi directly.
 
 * can only read full chip, no binning or ROI
+
+Requires Python >= 3.5
+https://www.scivision.co/set-python-version-update-alternatives/
 
 Michael Hirsch, Ph.D.
 https://scivision.co
@@ -13,7 +16,7 @@ from pibayer import pibayerraw
 if __name__ == '__main__':
     import signal
     signal.signal(signal.SIGINT, signal.SIG_DFL)
-    
+
     from argparse import ArgumentParser
     p = ArgumentParser(description='Raspberry Pi Picamera demo with raw Bayer data')
     p.add_argument('-e','--exposure',help='exposure time [seconds]',type=float)
