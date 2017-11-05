@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
 import numpy as np
 from time import sleep
 from matplotlib.pyplot import figure,draw,pause
@@ -25,7 +26,7 @@ def pibayerraw(exposure_sec:float, bit8:bool=False, plot:bool=False):
         setparams(cam, exposure_sec) #wait till after sleep() so that gains settle before turning off auto
         getparams(cam)
 #%% optional setup plot
-        hi = _setupfig(cam,plot)
+        hi,ht = _setupfig(cam,plot)
 #%% main loop, runs until Ctrl-C from user.
         while True:
 #            tic = time()
@@ -37,6 +38,7 @@ def pibayerraw(exposure_sec:float, bit8:bool=False, plot:bool=False):
             if plot:
 #                tic = time()
                 hi.set_data(img) #2.7 sec
+                ht.set_string(str(datetime.now()))
                 draw()
                 pause(0.01)
 #                print('{:.1f} sec. to update plot'.format(time()-tic))
@@ -64,8 +66,9 @@ def _setupfig(cam:PiCamera, plot:bool):
 
         hi = ax.imshow(img, cmap='gray')
         fg.colorbar(hi,ax=ax)
+        ht = ax.set_title('')
 
-        return hi
+        return hi,ht
     else:
         print('Live video preview disabled.')
 
