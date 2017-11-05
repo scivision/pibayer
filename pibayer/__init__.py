@@ -63,6 +63,7 @@ def _setupfig(cam:PiCamera, plot:bool):
         ax=fg.gca()
 
         img = grabframe(cam)
+        print('image shape',img.shape)
 
         hi = ax.imshow(img, cmap='gray')
         fg.colorbar(hi,ax=ax)
@@ -118,18 +119,23 @@ def setparams(c:PiCamera, exposure_sec:float=None):
 
 
 def getparams(c:PiCamera):
-    print('analog gain',c.analog_gain,'   digital gain',c.digital_gain)
+    print('analog gain',c.analog_gain,
+          '   digital gain',float(c.digital_gain))
     print('auto white balance:',c.awb_mode)
-    print('AWB Red gain',c.awb_gains[0],'   AWB Blue gain',c.awb_gains[1])
-    print('brightness, contrast',c.brightness,c.contrast)
+    print('AWB Red gain',float(c.awb_gains[0]),
+          '   AWB Blue gain',float(c.awb_gains[1]))
+    print('brightness',c.brightness,
+          '     contrast',c.contrast)
     print('dynamic range compression', c.drc_strength)
     print('exposure compensation', c.exposure_compensation)
     print('exposure mode', c.exposure_mode)
-    print('exposure speed, shutter speed [μs]',c.exposure_speed,c.shutter_speed)
+    print('exposure speed [μs]',c.exposure_speed,
+          '   shutter speed [μs]',c.shutter_speed)
     print('image denoise', c.image_denoise)
     print('image effect', c.image_effect)
     print('ISO', c.iso)
     print('exposure metering mode', c.meter_mode)
     print('rotation angle', c.rotation)
     print('saturation', c.saturation)
+    print('Sensor mode',c.sensor_mode)
     print('sharpness', c.sharpness)
