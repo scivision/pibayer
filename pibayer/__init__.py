@@ -1,22 +1,10 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
-import logging
 from datetime import datetime
 import numpy as np
 from time import sleep
-from matplotlib.pyplot import figure,draw,pause
 from picamera import PiCamera
 import picamera.array
-try:
-    import h5py
-except (ImportError,RuntimeError) as e:
-    logging.warning(e)
-    h5py = None
-try:
-    import tifffile
-except (ImportError,RuntimeError) as e:
-    logging.warning(e)
-    tifffile=None
 
 KEY = '/imgs'  # handle to write inside the output file
 CLVL = 1  # ZIP compression level
@@ -106,8 +94,7 @@ def _writesetup(outfn:Path, Nimg:int, img:np.ndarray):
 
     # note: both these file types must be .close() when done!
     if outfn.suffix == '.h5':
-        if h5py is None:
-            raise ImportError('h5py problem. Is it installed?')
+        import h5py
         f = h5py.File(outfn,'w',libver='earliest')
         f.create_dataset(KEY,
                          shape=(Nimg,img.shape[0],img.shape[1]),
@@ -116,8 +103,7 @@ def _writesetup(outfn:Path, Nimg:int, img:np.ndarray):
                          compression_opts=CLVL,
                          chunks=True)
     elif outfn.suffix in ('.tif','.tiff'):
-        if tifffile is None:
-            raise ImportError('tifffile problem. Is it installed?')
+        import tifffile
         f = tifffile.TiffWriter(str(outfn)) # NO append/compress keywords
     else:
         raise ValueError('unknown file type {}'.format(outfn))
@@ -132,6 +118,7 @@ def _preview(cam:PiCamera, preview:str, bit8:bool):
     hi=None; ht=None
 
     if preview=='mpl':
+        from matplotlib.pyplot import figure,draw,pause
         fg = figure()
         ax=fg.gca()
 
