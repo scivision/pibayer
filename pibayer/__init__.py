@@ -71,9 +71,9 @@ def writeframe(f, i:int, img:np.ndarray):
 
     print('writing image #',i,'\r',end="",flush=True)
 
-    if KEY in f: # HDF5
+    if 'h5py' in str(f.__class__): # HDF5
         f[KEY][i,:,:] = img
-    else: # assume TIFF
+    elif 'tifffile' in str(f.__class__): # TIFF
         f.save(img,compress=CLVL)
 
 
