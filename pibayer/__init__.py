@@ -111,7 +111,10 @@ def _writesetup(outfn:Path, Nimg:int, img:np.ndarray):
         f = h5py.File(outfn,'w',libver='latest')
         f.create_dataset(KEY,
                          shape=(Nimg,img.shape[0],img.shape[1]),
-                         dtype=img.dtype)
+                         dtype=img.dtype,
+                         compression='gzip',
+                         compression_opts=CLVL,
+                         chunks=True)
     elif outfn.suffix in ('.tif','.tiff'):
         if tifffile is None:
             raise ImportError('tifffile problem. Is it installed?')
