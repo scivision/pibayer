@@ -66,18 +66,20 @@ def writeframe(f, i:int, img:np.ndarray):
     if f is None:
         return
 
+
     assert img.ndim == 2
 
     print('writing image #',i,'\r',end="",flush=True)
 
-    if isinstance(f, h5py.File):
+    if KEY in f: # HDF5
         f[KEY][i,:,:] = img
-    elif isinstance(f, tifffile.TiffWriter):
+    else: # assume TIFF
         f.save(img,compress=CLVL)
 
 
 def updatepreview(img, hi, ht):
     if hi is not None:
+        from matplotlib.pyplot import draw,pause
 #       tic = time()
         hi.set_data(img) #2.7 sec
         ht.set_text(str(datetime.now()))
@@ -118,7 +120,7 @@ def _preview(cam:PiCamera, preview:str, bit8:bool):
     hi=None; ht=None
 
     if preview=='mpl':
-        from matplotlib.pyplot import figure,draw,pause
+        from matplotlib.pyplot import figure
         fg = figure()
         ax=fg.gca()
 
