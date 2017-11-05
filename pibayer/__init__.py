@@ -118,9 +118,9 @@ def setparams(c:PiCamera, exposure_sec:float=None):
 
 
 def getparams(c:PiCamera):
-    # NOTE: str() avoids printing Fraction(5,3)
     print('analog gain',c.analog_gain,'   digital gain',c.digital_gain)
-    print('auto white balance',str(c.awb_mode),'     AWB gains',str(c.awb_gains))
+    print('auto white balance:',c.awb_mode)
+    print('AWB Red gain',c.awb_gains[0],'   AWB Blue gain',c.awb_gains[1])
     print('brightness, contrast',c.brightness,c.contrast)
     print('dynamic range compression', c.drc_strength)
     print('exposure compensation', c.exposure_compensation)
