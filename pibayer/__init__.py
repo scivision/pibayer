@@ -85,7 +85,7 @@ def writeframe(f, i:int, img:np.ndarray):
     if isinstance(f, h5py.File):
         f[KEY][i,:,:] = img
     elif isinstance(f, tifffile.TiffWriter):
-        f.save(img)
+        f.save(img,compress=CLVL)
 
 
 def updatepreview(img, hi, ht):
@@ -118,7 +118,7 @@ def _writesetup(outfn:Path, Nimg:int, img:np.ndarray):
     elif outfn.suffix in ('.tif','.tiff'):
         if tifffile is None:
             raise ImportError('tifffile problem. Is it installed?')
-        f = tifffile.TiffWriter(str(outfn)) # NO append keyword
+        f = tifffile.TiffWriter(str(outfn)) # NO append/compress keywords
     else:
         raise ValueError('unknown file type {}'.format(outfn))
 
