@@ -30,8 +30,9 @@ def pibayerraw(exposure_sec:float, bit8:bool=False, preview:str=None):
         if preview=='gpu':
             return
 #%% main loop, runs until Ctrl-C from user.
-        while True:
-          try:
+        try:
+          while True:
+
 #            tic = time()
             img10 = grabframe(cam)
 #            print('{:.1f} sec. to grab frame'.format(time()-tic))
@@ -45,8 +46,8 @@ def pibayerraw(exposure_sec:float, bit8:bool=False, preview:str=None):
                 draw()
                 pause(0.01)
 #                print('{:.1f} sec. to update plot'.format(time()-tic))
-          except KeyboardInterrupt:
-              break  # cleanup, closes camera
+        except KeyboardInterrupt:
+          pass  # cleanup, close camera
 
 def grabframe(cam:PiCamera):
 
