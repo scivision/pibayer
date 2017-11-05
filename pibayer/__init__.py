@@ -76,10 +76,14 @@ def _preview(cam:PiCamera, preview:str):
         ht = ax.set_title('')
 
     elif preview=='gpu':
-        print('Preview-only mode runs until Ctrl-C.')
+        tpre = 100
+        print('Preview-only mode runs for ',tpre,' seconds, or Ctrl-C.')
         try:
             cam.start_preview()
+            sleep(tpre)
         except KeyboardInterrupt:
+            cam.stop_preview()
+        finally:
             cam.stop_preview()
 
     return hi,ht
