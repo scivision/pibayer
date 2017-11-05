@@ -75,7 +75,7 @@ def writeframe(f, i:int, img:np.ndarray):
     if f is None:
         return
 
-    assert img.shape == 2
+    assert img.ndim == 2
 
     if isinstance(f, h5py.File):
         f[KEY][i,:,:] = img
