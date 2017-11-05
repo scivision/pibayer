@@ -1,12 +1,25 @@
 # -*- coding: utf-8 -*-
+from pathlib import Path
 from datetime import datetime
 import numpy as np
 from time import sleep
 from matplotlib.pyplot import figure,draw,pause
 from picamera import PiCamera
 import picamera.array
+try:
+    import h5py
+except ImportError:
+    h5py = None
+try:
+    import tifffile
+except ImportError:
+    tifffile=None
 
-def pibayerraw(exposure_sec:float, bit8:bool=False, preview:str=None):
+KEY = '/imgs'  # handle to write inside the output file
+CLVL = 1  # ZIP compression level
+
+def pibayerraw(Nimg:int, exposure_sec:float, bit8:bool=False,
+               preview:str=None, outfn:Path=None):
     """
     loop image acquisition, optionally plotting
 
@@ -21,44 +34,81 @@ def pibayerraw(exposure_sec:float, bit8:bool=False, preview:str=None):
         may need adaptation for Raspberry Pi camera
     """
     with PiCamera() as cam: #load camera driver
-        print('camera startup gain autocal')
-        sleep(0.75) # somewhere between 0.5..0.75 seconds to let camera settle to final gain value.
         setparams(cam, exposure_sec) #wait till after sleep() so that gains settle before turning off auto
         getparams(cam)
 #%% optional setup plot
         hi,ht = _preview(cam, preview)
         if preview=='gpu':
             return
-#%% main loop, runs until Ctrl-C from user.
+#%% optional setup output file
+        f = _writesetup(outfn)
+#%% main loop
         try:
-          while True:
-
-#            tic = time()
-            img10 = grabframe(cam)
-#            print('{:.1f} sec. to grab frame'.format(time()-tic))
-#%% linear scale 10-bit to 8-bit
-            img = sixteen2eight(img10, (0,2**10)) if bit8 else img10
+            for i in range(Nimg):
+                img = grabframe(cam, bit8)
+#%% write this frame to output file
+                writeframe(f, i, img)
 #%% plot--not recommended due to very slow 10 seconds update
-            if hi is not None:
-#                tic = time()
-                hi.set_data(img) #2.7 sec
-                ht.set_text(str(datetime.now()))
-                draw()
-                pause(0.01)
-#                print('{:.1f} sec. to update plot'.format(time()-tic))
+                updatepreview(img, hi, ht)
         except KeyboardInterrupt:
-          pass  # cleanup, close camera. Might need to press Ctrl C a couple times.
+            pass  # cleanup, close camera. Might need to press Ctrl C a couple times.
 
-def grabframe(cam:PiCamera):
-
+def grabframe(cam:PiCamera, bit8:bool=False):
+#   tic = time()
     with picamera.array.PiBayerArray(cam, output_dims=2) as S:
         cam.capture(S, 'jpeg', bayer=True)
 
         img = S.array  # must be under 'with'
 
     assert isinstance(img,np.ndarray) and img.ndim == 2
-
+#%% linear scale 10-bit to 8-bit
+    if bit8:
+        img = sixteen2eight(img, (0,2**10))
+#   print('{:.1f} sec. to grab frame'.format(time()-tic))
     return img
+
+
+def writeframe(f, i:int, img:np.ndarray):
+    if f is None:
+        return
+
+    assert img.shape == 2
+
+    if isinstance(f, h5py.File):
+        f[KEY][i,:,:] = img
+    elif isinstance(f, tifffile.TiffWriter):
+        f.save(img)
+
+
+def updatepreview(img, hi, ht):
+    if hi is not None:
+#       tic = time()
+        hi.set_data(img) #2.7 sec
+        ht.set_text(str(datetime.now()))
+        draw()
+        pause(0.01)
+#       print('{:.1f} sec. to update plot'.format(time()-tic))
+
+
+def _writesetup(outfn:Path):
+    if not outfn:
+        return
+
+    outfn = Path(outfn).expanduser()
+
+    # note: both these file types must be .close() when done!
+    if outfn.suffix == '.h5':
+        if h5py is None:
+            raise ImportError('h5py problem. Is it installed?')
+        f = h5py.File(outfn,'w',libver='latest')
+    elif outfn.suffix in ('.tif','.tiff'):
+        if tifffile is None:
+            raise ImportError('tifffile problem. Is it installed?')
+        f = tifffile.TiffWriter(str(outfn), append=True)
+    else:
+        raise ValueError('unknown file type {}'.format(outfn))
+
+    return f
 
 
 def _preview(cam:PiCamera, preview:str):
@@ -121,6 +171,9 @@ def normframe(I:np.ndarray, Clim:tuple) -> np.ndarray:
 
 def setparams(c:PiCamera, exposure_sec:float=None):
     # http://picamera.readthedocs.io/en/release-1.10/recipes1.html#consistent-capture
+    print('camera startup gain autocal')
+    sleep(1) # somewhere between 0.5..0.75 seconds to let camera settle to final gain value.
+
     c.awb_mode ='off' #auto white balance
     c.awb_gains = (1,1.) # 0.0...8.0  (red,blue)
     c.exposure_mode = 'off'

@@ -20,6 +20,8 @@ if __name__ == '__main__':
 # NOTE: Didn't use SIGINT to allow camera to cleanup/close
     from argparse import ArgumentParser
     p = ArgumentParser(description='Raspberry Pi Picamera demo with raw Bayer data')
+    p.add_argument('outfn',help='HDF5 or TIFF file to write image stack to',nargs='?')
+    p.add_argument('-n','--numimg',help='number of images to write to disk',default=10)
     p.add_argument('-e','--exposure',help='exposure time [seconds]',type=float)
     p.add_argument('-8','--bit8',help="convert output to 8-bit",action='store_true')
     p.add_argument('-a','--aim',help='fast GPU-based preview for aiming',action='store_true')
@@ -32,5 +34,5 @@ if __name__ == '__main__':
         preview = 'mpl'
 
     print('press Ctrl C  to end program')
-    img = pibayerraw(p.exposure, p.bit8, preview)
+    img = pibayerraw(p.numimg, p.exposure, p.bit8, preview, p.outfn)
 
