@@ -108,7 +108,7 @@ def _writesetup(outfn:Path, Nimg:int, img:np.ndarray):
     if outfn.suffix == '.h5':
         if h5py is None:
             raise ImportError('h5py problem. Is it installed?')
-        f = h5py.File(outfn,'w',libver='latest')
+        f = h5py.File(outfn,'w',libver='earliest')
         f.create_dataset(KEY,
                          shape=(Nimg,img.shape[0],img.shape[1]),
                          dtype=img.dtype,
