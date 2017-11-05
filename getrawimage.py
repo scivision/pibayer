@@ -17,16 +17,20 @@ https://scivision.co
 from pibayer import pibayerraw
 
 if __name__ == '__main__':
-    import signal
-    signal.signal(signal.SIGINT, signal.SIG_DFL)
-
+# NOTE: Didn't use SIGINT to allow camera to cleanup/close
     from argparse import ArgumentParser
     p = ArgumentParser(description='Raspberry Pi Picamera demo with raw Bayer data')
     p.add_argument('-e','--exposure',help='exposure time [seconds]',type=float)
     p.add_argument('-8','--bit8',help="convert output to 8-bit",action='store_true')
-    p.add_argument('-p','--plot',help='show live plot',action='store_true')
+    p.add_argument('-a','--aim',help='fast GPU-based preview for aiming',action='store_true')
+    p.add_argument('-p','--plot',help='show via Matplotlib (slow)s',action='store_true')
     p = p.parse_args()
 
+    if p.aim:
+        preview = 'gpu'
+    elif p.plot:
+        preview = 'mpl'
+
     print('press Ctrl C  to end program')
-    img = pibayerraw(p.exposure, p.bit8, p.plot)
+    img = pibayerraw(p.exposure, p.bit8, preview)
 

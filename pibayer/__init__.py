@@ -6,7 +6,7 @@ from matplotlib.pyplot import figure,draw,pause
 from picamera import PiCamera
 import picamera.array
 
-def pibayerraw(exposure_sec:float, bit8:bool=False, plot:bool=False):
+def pibayerraw(exposure_sec:float, bit8:bool=False, preview:str=None):
     """
     loop image acquisition, optionally plotting
 
@@ -26,23 +26,27 @@ def pibayerraw(exposure_sec:float, bit8:bool=False, plot:bool=False):
         setparams(cam, exposure_sec) #wait till after sleep() so that gains settle before turning off auto
         getparams(cam)
 #%% optional setup plot
-        hi,ht = _setupfig(cam,plot)
+        hi,ht = _preview(cam, preview)
+        if preview=='gpu':
+            return
 #%% main loop, runs until Ctrl-C from user.
         while True:
+          try:
 #            tic = time()
             img10 = grabframe(cam)
 #            print('{:.1f} sec. to grab frame'.format(time()-tic))
 #%% linear scale 10-bit to 8-bit
-            img = sixteen2eight(img10,(0,2**10)) if bit8 else img10
-#%% plot
-            if plot:
+            img = sixteen2eight(img10, (0,2**10)) if bit8 else img10
+#%% plot--not recommended due to very slow 10 seconds update
+            if hi is not None:
 #                tic = time()
                 hi.set_data(img) #2.7 sec
                 ht.set_text(str(datetime.now()))
                 draw()
                 pause(0.01)
 #                print('{:.1f} sec. to update plot'.format(time()-tic))
-
+          except KeyboardInterrupt:
+              break  # cleanup, closes camera
 
 def grabframe(cam:PiCamera):
 
@@ -56,9 +60,11 @@ def grabframe(cam:PiCamera):
     return img
 
 
-def _setupfig(cam:PiCamera, plot:bool):
+def _preview(cam:PiCamera, preview:str):
 
-    if plot:
+    hi=None; ht=None
+
+    if preview=='mpl':
         fg = figure()
         ax=fg.gca()
 
@@ -69,9 +75,14 @@ def _setupfig(cam:PiCamera, plot:bool):
         fg.colorbar(hi,ax=ax)
         ht = ax.set_title('')
 
-        return hi,ht
-    else:
-        print('Live video preview disabled.')
+    elif preview=='gpu':
+        print('Preview-only mode runs until Ctrl-C.')
+        try:
+            cam.start_preview()
+        except KeyboardInterrupt:
+            cam.stop_preview()
+
+    return hi,ht
 
 
 def sixteen2eight(I:np.ndarray, Clim:tuple) -> np.ndarray:
