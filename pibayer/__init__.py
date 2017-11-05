@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
+import logging
 from datetime import datetime
 import numpy as np
 from time import sleep
@@ -8,11 +9,13 @@ from picamera import PiCamera
 import picamera.array
 try:
     import h5py
-except ImportError:
+except (ImportError,RuntimeError) as e:
+    logging.warning(e)
     h5py = None
 try:
     import tifffile
-except ImportError:
+except (ImportError,RuntimeError) as e:
+    logging.warning(e)
     tifffile=None
 
 KEY = '/imgs'  # handle to write inside the output file
