@@ -209,7 +209,7 @@ def getparams(c:PiCamera):
     print('analog gain', float(c.analog_gain))
 
      #print('digital gain',float(c.digital_gain))
-    np.testing.assert_almost_equal(c.digital_gain, 1.,
+    np.testing.assert_allclose(c.digital_gain, 1.,
                                           rtol=0.1)
 
     #print('auto white balance:',c.awb_mode)
