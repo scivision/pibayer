@@ -219,7 +219,7 @@ def getparams(c:PiCamera):
     assert c.drc_strength=='off'
 
     #print('exposure compensation', c.exposure_compensation)
-    assert c.exposure_compensation=='off'
+    assert c.exposure_compensation==0
 
     #print('exposure mode', c.exposure_mode)
     assert c.exposure_mode == 'off'
