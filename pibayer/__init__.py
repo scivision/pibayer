@@ -180,7 +180,7 @@ def setparams(c:PiCamera, exposure_sec:float=None):
 
     c.drc_strength = 'off' # in order here
     c.awb_mode ='off' #auto white balance
-    print('AWB gains before settings were', map(float,c.awb_gains))
+    print('AWB gains before settings were',float(c.awb_gains[0]),float(c.awb_gains[1]))
     c.awb_gains = (1,1.) # 0.0...8.0  (red,blue)
 
     c.exposure_mode = 'off'
