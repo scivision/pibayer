@@ -13,6 +13,35 @@ REDGAIN = 1.
 BLUEGAIN = 1.
 ISO=100
 
+def _outconv(cam,Nimg,img):
+    i = 0
+    with picamera.array.PiBayerArray(cam, output_dims=2) as S:
+        while i<Nimg:
+            yield S
+            img[i] = S.array
+            i+=1
+
+
+
+def bayerseq(Nimg:int, exposure_sec:float, bit8:bool=False,
+               preview=None, outfn:Path=None):
+
+    with PiCamera() as cam: #load camera driver
+        setparams(cam, exposure_sec) #wait till after sleep() so that gains settle before turning off auto
+        r,c = getparams(cam)
+
+        img = np.empty((Nimg,r,c),dtype=np.uint16)
+
+        print(cam.exposure_speed/1e6)
+
+        cam.capture_sequence(_outconv(cam,Nimg,img), 'jpeg', burst=False, bayer=True,
+                                 use_video_port=False)
+
+        print(cam.exposure_speed/1e6)
+
+    return img
+
+
 def pibayerraw(Nimg:int, exposure_sec:float, bit8:bool=False,
                preview=None, outfn:Path=None):
     """
@@ -286,3 +315,5 @@ def getparams(c:PiCamera):
 
     #print('still stats',c.still_stats)
     assert c.still_stats == False
+
+    return img.shape
