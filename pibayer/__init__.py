@@ -217,7 +217,7 @@ def getparams(c:PiCamera):
 
     #print('AWB Red gain',float(c.awb_gains[0]),
     #      '   AWB Blue gain',float(c.awb_gains[1]))
-    np.testing.assert_allclose(c.awb_gains,
+    np.testing.assert_allclose(map(float,c.awb_gains),
                                (REDGAIN,BLUEGAIN),
                                rtol=0.01)
 
@@ -245,12 +245,20 @@ def getparams(c:PiCamera):
     #print('image effect', c.image_effect)
     assert c.image_effect=='none'
 
-    print('ISO', c.iso)
-    print('exposure metering mode', c.meter_mode)
+    #print('ISO', c.iso)
+    assert c.iso==0
+
+#    print('exposure metering mode', c.meter_mode)
+    assert c.meter_mode=='average'
+
     print('rotation angle', c.rotation)
     print('saturation', c.saturation)
-    print('Sensor mode',c.sensor_mode)
-    print('sharpness', c.sharpness)
+
+    #print('Sensor mode',c.sensor_mode)
+    assert c.sensor_mode==0
+
+    #print('sharpness', c.sharpness)
+    assert c.sharpness==0
 
     #print('still stats',c.still_stats)
     assert c.still_stats == False
