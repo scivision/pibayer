@@ -50,7 +50,7 @@ def pibayerraw(Nimg:int, exposure_sec:float, bit8:bool=False,
 def grabframe(cam:PiCamera, bit8:bool=False):
 #   tic = time()
     with picamera.array.PiBayerArray(cam, output_dims=2) as S:
-        cam.capture(S, 'jpeg', bayer=True)
+        cam.capture(S, 'jpeg', bayer=True, use_video_port=False)
 
         img = S.array  # must be under 'with'
 
@@ -177,12 +177,15 @@ def normframe(I:np.ndarray, Clim:tuple) -> np.ndarray:
 def setparams(c:PiCamera, exposure_sec:float=None):
     # http://picamera.readthedocs.io/en/release-1.10/recipes1.html#consistent-capture
     print('camera startup gain autocal')
-    sleep(1) # somewhere between 0.5..0.75 seconds to let camera settle to final gain value.
+    sleep(2) # at least 0.5..0.75 seconds to let camera settle to final gain value.
 
     c.awb_mode ='off' #auto white balance
+    print('AWB gains before settings were',c.awb_gains)
     c.awb_gains = (1,1.) # 0.0...8.0  (red,blue)
+
     c.exposure_mode = 'off'
     c.iso= 100
+
     c.framerate=1 #this caps your maximum shutter length
     if isinstance(exposure_sec,(float,int)):
         c.shutter_speed = int(exposure_sec * 1e6)
@@ -191,10 +194,11 @@ def setparams(c:PiCamera, exposure_sec:float=None):
     c.drc_strength = 'off'
     c.image_denoise = False
     c.image_effect = 'none'
+    c.still_stats=False
 
 
 def getparams(c:PiCamera):
-    print('analog gain',c.analog_gain,
+    print('analog gain', float(c.analog_gain),
           '   digital gain',float(c.digital_gain))
     print('auto white balance:',c.awb_mode)
     print('AWB Red gain',float(c.awb_gains[0]),
@@ -214,3 +218,4 @@ def getparams(c:PiCamera):
     print('saturation', c.saturation)
     print('Sensor mode',c.sensor_mode)
     print('sharpness', c.sharpness)
+    print('still stats',c.still_stats)
