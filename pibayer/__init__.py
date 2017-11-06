@@ -79,7 +79,8 @@ def writeframe(f, i:int, img:np.ndarray, cam:PiCamera):
     elif 'tifffile' in str(f.__class__): # TIFF
         if i==0:
             f.save(img, compress=CLVL,
-               extratags=[(33434,'f',1,cam.exposure_speed/1e6,True)  # exposure (sec)
+               extratags=[(33434,'f',1,cam.exposure_speed/1e6,True),
+                          (41991,'f',1,cam.analog_gain,True)
                ])
         else:
             f.save(img, compress=CLVL)
