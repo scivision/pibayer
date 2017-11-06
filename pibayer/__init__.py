@@ -34,6 +34,7 @@ def bayerseq(Nimg:int, exposure_sec:float, bit8:bool=False,
 
         print(cam.exposure_speed/1e6)
 
+        cam.start_preview(alpha=200)
         cam.capture_sequence(_outconv(cam,Nimg,img), 'jpeg', burst=False, bayer=True,
                                  use_video_port=False)
 
@@ -68,12 +69,13 @@ def pibayerraw(Nimg:int, exposure_sec:float, bit8:bool=False,
         f = _writesetup(outfn, Nimg, grabframe(cam, bit8))
 #%% main loop
         try:
+            cam.start_preview(alpha=200)  # doesn't help dying exposure problem
             for i in range(Nimg):
                 img = grabframe(cam, bit8)
 #%% write this frame to output file
                 writeframe(f, i, img, cam)
 #%% plot--not recommended due to very slow 10 seconds update
-                updatepreview(img, hi, ht)
+#                updatepreview(img, hi, ht)
         except KeyboardInterrupt:
             pass # cleanup, close camera. Might need to press Ctrl C a couple times.
 
@@ -96,9 +98,6 @@ def grabframe(cam:PiCamera, bit8:bool=False):
 
 
 def writeframe(f, i:int, img:np.ndarray, cam:PiCamera):
-    if f is None:
-        return
-
     assert img.ndim == 2
     expsec = cam.exposure_speed/1e6
     shtsec = cam.shutter_speed/1e6
@@ -106,6 +105,9 @@ def writeframe(f, i:int, img:np.ndarray, cam:PiCamera):
 
     print('writing image #',i,'exp_sec',expsec,'shutter_sec',shtsec,'analog gain',again,
           '\r',end="",flush=True)
+
+    if f is None:
+        return
 
     if 'h5py' in str(f.__class__): # HDF5
         f[KEY][i,:,:] = img
