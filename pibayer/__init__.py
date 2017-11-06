@@ -206,23 +206,40 @@ def getparams(c:PiCamera):
     print('image size',img.shape)
     print('analog gain', float(c.analog_gain),
           '   digital gain',float(c.digital_gain))
-    print('auto white balance:',c.awb_mode)
+
+    #print('auto white balance:',c.awb_mode)
+    assert c.awb_mode=='off'
+
     print('AWB Red gain',float(c.awb_gains[0]),
           '   AWB Blue gain',float(c.awb_gains[1]))
     print('brightness',c.brightness,
           '     contrast',c.contrast)
-    print('dynamic range compression', c.drc_strength)
-    print('exposure compensation', c.exposure_compensation)
-    print('exposure mode', c.exposure_mode)
+
+    #print('dynamic range compression', c.drc_strength)
+    assert c.drc_strength=='off'
+
+    #print('exposure compensation', c.exposure_compensation)
+    assert c.exposure_compensation=='off'
+
+    #print('exposure mode', c.exposure_mode)
+    assert c.exposure_mode == 'off'
+
     print('exposure speed [ms]',c.exposure_speed/1e3,
           '   shutter speed [ms]',c.shutter_speed/1e3)
     print('framerate [frames/sec]',c.framerate)
-    print('image denoise', c.image_denoise)
-    print('image effect', c.image_effect)
+
+    #print('image denoise', c.image_denoise)
+    assert c.image_denoise==False
+
+    #print('image effect', c.image_effect)
+    assert c.image_effect=='none'
+
     print('ISO', c.iso)
     print('exposure metering mode', c.meter_mode)
     print('rotation angle', c.rotation)
     print('saturation', c.saturation)
     print('Sensor mode',c.sensor_mode)
     print('sharpness', c.sharpness)
-    print('still stats',c.still_stats)
+
+    #print('still stats',c.still_stats)
+    assert c.still_stats == False
