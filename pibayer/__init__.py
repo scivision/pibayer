@@ -35,7 +35,7 @@ def pibayerraw(Nimg:int, exposure_sec:float, bit8:bool=False,
         if isinstance(preview,(int,float)): # GPU preview
             return
 #%% optional setup output file
-        f = _writesetup(outfn, Nimg, grabframe(cam, bit8))
+        f = _writesetup(outfn, Nimg, grabframe(cam, bit8), cam)
 #%% main loop
         try:
             for i in range(Nimg):
@@ -77,7 +77,7 @@ def writeframe(f, i:int, img:np.ndarray):
     if 'h5py' in str(f.__class__): # HDF5
         f[KEY][i,:,:] = img
     elif 'tifffile' in str(f.__class__): # TIFF
-        f.save(img,compress=CLVL)
+        f.save(img, compress=CLVL)
 
 
 def updatepreview(img, hi, ht):
@@ -91,7 +91,7 @@ def updatepreview(img, hi, ht):
 #       print('{:.1f} sec. to update plot'.format(time()-tic))
 
 
-def _writesetup(outfn:Path, Nimg:int, img:np.ndarray):
+def _writesetup(outfn:Path, Nimg:int, img:np.ndarray, cam:PiCamera):
     if not outfn:
         return
 
@@ -110,6 +110,10 @@ def _writesetup(outfn:Path, Nimg:int, img:np.ndarray):
     elif outfn.suffix in ('.tif','.tiff'):
         import tifffile
         f = tifffile.TiffWriter(str(outfn)) # NO append/compress keywords
+        f.save(extratags=[
+                (33434,'f',1,cam.exposure_speed/1e6,True)  # exposure (sec)
+               ]
+               )
     else:
         raise ValueError('unknown file type {}'.format(outfn))
 
