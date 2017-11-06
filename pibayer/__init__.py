@@ -77,13 +77,12 @@ def writeframe(f, i:int, img:np.ndarray, cam:PiCamera):
     if 'h5py' in str(f.__class__): # HDF5
         f[KEY][i,:,:] = img
     elif 'tifffile' in str(f.__class__): # TIFF
-        if i==0:
-            f.save(img, compress=CLVL,
-               extratags=[(33434,'f',1,cam.exposure_speed/1e6,True),
-                          (41991,'f',1,cam.analog_gain,True)
+        f.save(img, compress=CLVL,
+               extratags=[(33434,'f',1,cam.exposure_speed/1e6,False),
+                          (37377,'f',1,cam.shutter_speed/1e6,False),
+                          (41991,'f',1,cam.analog_gain,False),
                ])
-        else:
-            f.save(img, compress=CLVL)
+
 
 
 def updatepreview(img, hi, ht):

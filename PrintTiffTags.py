@@ -13,8 +13,9 @@ def printtags(fn:Path, tlist:list):
             print('\n** Image ',i,' **')
             for tag in page.tags.values():
                 t = tag.name, tag.value
-                if tlist and tag.name in tlist:
-                    print(t[0],t[1])
+                if tlist:
+                    if tag.name in tlist:
+                        print(t[0],t[1])
                 else:
                     print(t[0],t[1])
             
