@@ -173,7 +173,10 @@ def normframe(I:np.ndarray, Clim:tuple) -> np.ndarray:
 
 
 def setparams(c:PiCamera, exposure_sec:float=None):
-    # http://picamera.readthedocs.io/en/release-1.10/recipes1.html#consistent-capture
+    # http://picamera.readthedocs.io/en/release-1.13/recipes1.html#consistent-capture
+
+    # exposure_speed: readonly
+
     print('camera startup gain autocal')
     sleep(2) # at least 0.5..0.75 seconds to let camera settle to final gain value.
 
@@ -183,7 +186,7 @@ def setparams(c:PiCamera, exposure_sec:float=None):
     c.awb_gains = (1,1.) # 0.0...8.0  (red,blue)
 
     c.exposure_mode = 'off'
-    c.iso= 100
+ #   c.iso= 100 # don't set or exposure goes auto
 
     c.framerate=1 #this caps your maximum shutter length
     if isinstance(exposure_sec,(float,int)):
