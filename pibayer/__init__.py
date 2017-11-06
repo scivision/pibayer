@@ -172,7 +172,7 @@ def normframe(I:np.ndarray, Clim:tuple) -> np.ndarray:
     return (I.astype(np.float32).clip(Vmin, Vmax) - Vmin) / (Vmax - Vmin) #stretch to [0,1]
 
 
-def setparams(c:PiCamera, exposure_sec:float=None):
+def setparams(c:PiCamera, exposure_sec:float):
     # http://picamera.readthedocs.io/en/release-1.13/recipes1.html#consistent-capture
 
     # exposure_speed: readonly
@@ -188,9 +188,8 @@ def setparams(c:PiCamera, exposure_sec:float=None):
     c.exposure_mode = 'off'
  #   c.iso= 100 # don't set or exposure goes auto
 
-    c.framerate=1 #this caps your maximum shutter length
-    if isinstance(exposure_sec,(float,int)):
-        c.shutter_speed = int(exposure_sec * 1e6)
+    c.framerate=1 # [frames/sec] caps maximum shutter length
+    c.shutter_speed = int(exposure_sec * 1e6)
 #   c.brightness(50)
 #   c.contrast(0)
     c.image_denoise = False
@@ -217,6 +216,7 @@ def getparams(c:PiCamera):
     print('exposure mode', c.exposure_mode)
     print('exposure speed [μs]',c.exposure_speed,
           '   shutter speed [μs]',c.shutter_speed)
+    print('framerate [frames/sec]',c.framerate)
     print('image denoise', c.image_denoise)
     print('image effect', c.image_effect)
     print('ISO', c.iso)
