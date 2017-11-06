@@ -22,7 +22,7 @@ if __name__ == '__main__':
     p = ArgumentParser(description='Raspberry Pi Picamera demo with raw Bayer data')
     p.add_argument('exposure',help='exposure time [seconds]',type=float)
     p.add_argument('outfn',help='HDF5 or TIFF file to write image stack to',nargs='?')
-    p.add_argument('-n','--numimg',help='number of images to write to disk',default=10)
+    p.add_argument('-n','--numimg',help='number of images to write to disk',type=int,default=10)
     p.add_argument('-8','--bit8',help="convert output to 8-bit",action='store_true')
     p.add_argument('-a','--aim',help='seconds to preview fast GPU-based preview for aiming',type=float)
     p.add_argument('-p','--plot',help='show via Matplotlib (slow)s',action='store_true')

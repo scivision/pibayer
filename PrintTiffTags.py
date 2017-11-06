@@ -9,17 +9,21 @@ def printtags(fn:Path, tlist:list):
     fn = Path(fn).expanduser()
 
     with tifffile.TiffFile(str(fn)) as tif:
-        for page in tif:
+        for i,page in enumerate(tif):
+            print('\n** Image ',i,' **')
             for tag in page.tags.values():
                 t = tag.name, tag.value
-                if tag.name in tlist:
-                    print(t)
+                if tlist and tag.name in tlist:
+                    print(t[0],t[1])
+                else:
+                    print(t[0],t[1])
+            
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
     p = ArgumentParser()
     p.add_argument('fn',help='TIFF file to print tags from')
-    p.add_argument('-t','--tags',help='tag numbers to print',nargs='+',default=['33434'],type=str)
+    p.add_argument('-t','--tags',help='tag numbers to print',nargs='+',type=str)
     p = p.parse_args()
 
 
