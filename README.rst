@@ -24,21 +24,23 @@ This is meant to be installed directly on the Raspberry Pi::
 Examples
 ========
 
+Setting of exposure time manually (seconds) is mandatory to avoid mistakes in experiments.
+
 RAW live video display
 ----------------------
 ::
 
-    ./getrawimage.py -a
-    
+    ./getrawimage.py 0.01 -a
+
 Dump image stack to disk
 ------------------------
 HDF5::
 
-    ./getrawimage.py output.h5
-    
+    ./getrawimage.py 0.01 output.h5
+
 TIFF::
 
-    ./getrawimage.py output.tif
+    ./getrawimage.py 0.01 output.tif
 
 
 Command-Line Options

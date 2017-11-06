@@ -214,8 +214,8 @@ def getparams(c:PiCamera):
     print('dynamic range compression', c.drc_strength)
     print('exposure compensation', c.exposure_compensation)
     print('exposure mode', c.exposure_mode)
-    print('exposure speed [μs]',c.exposure_speed,
-          '   shutter speed [μs]',c.shutter_speed)
+    print('exposure speed [ms]',c.exposure_speed/1e3,
+          '   shutter speed [ms]',c.shutter_speed/1e3)
     print('framerate [frames/sec]',c.framerate)
     print('image denoise', c.image_denoise)
     print('image effect', c.image_effect)
