@@ -35,13 +35,13 @@ def pibayerraw(Nimg:int, exposure_sec:float, bit8:bool=False,
         if isinstance(preview,(int,float)): # GPU preview
             return
 #%% optional setup output file
-        f = _writesetup(outfn, Nimg, grabframe(cam, bit8), cam)
+        f = _writesetup(outfn, Nimg, grabframe(cam, bit8))
 #%% main loop
         try:
             for i in range(Nimg):
                 img = grabframe(cam, bit8)
 #%% write this frame to output file
-                writeframe(f, i, img)
+                writeframe(f, i, img, cam)
 #%% plot--not recommended due to very slow 10 seconds update
                 updatepreview(img, hi, ht)
         except KeyboardInterrupt:
@@ -65,7 +65,7 @@ def grabframe(cam:PiCamera, bit8:bool=False):
     return img
 
 
-def writeframe(f, i:int, img:np.ndarray):
+def writeframe(f, i:int, img:np.ndarray, cam:PiCamera):
     if f is None:
         return
 
@@ -77,7 +77,12 @@ def writeframe(f, i:int, img:np.ndarray):
     if 'h5py' in str(f.__class__): # HDF5
         f[KEY][i,:,:] = img
     elif 'tifffile' in str(f.__class__): # TIFF
-        f.save(img, compress=CLVL)
+        if i==0:
+            f.save(img, compress=CLVL,
+               extratags=[(33434,'f',1,cam.exposure_speed/1e6,True)  # exposure (sec)
+               ])
+        else:
+            f.save(img, compress=CLVL)
 
 
 def updatepreview(img, hi, ht):
@@ -91,7 +96,7 @@ def updatepreview(img, hi, ht):
 #       print('{:.1f} sec. to update plot'.format(time()-tic))
 
 
-def _writesetup(outfn:Path, Nimg:int, img:np.ndarray, cam:PiCamera):
+def _writesetup(outfn:Path, Nimg:int, img:np.ndarray):
     if not outfn:
         return
 
@@ -110,10 +115,6 @@ def _writesetup(outfn:Path, Nimg:int, img:np.ndarray, cam:PiCamera):
     elif outfn.suffix in ('.tif','.tiff'):
         import tifffile
         f = tifffile.TiffWriter(str(outfn)) # NO append/compress keywords
-        f.save(extratags=[
-                (33434,'f',1,cam.exposure_speed/1e6,True)  # exposure (sec)
-               ]
-               )
     else:
         raise ValueError('unknown file type {}'.format(outfn))
 
