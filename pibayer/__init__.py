@@ -8,6 +8,8 @@ import picamera.array
 
 KEY = '/imgs'  # handle to write inside the output file
 CLVL = 1  # ZIP compression level
+REDGAIN = 1.
+BLUEGAIN = 1.
 
 def pibayerraw(Nimg:int, exposure_sec:float, bit8:bool=False,
                preview=None, outfn:Path=None):
@@ -183,7 +185,7 @@ def setparams(c:PiCamera, exposure_sec:float):
     c.drc_strength = 'off' # in order here
     c.awb_mode ='off' #auto white balance
     print('AWB gains before settings were',float(c.awb_gains[0]),float(c.awb_gains[1]))
-    c.awb_gains = (1,1.) # 0.0...8.0  (red,blue)
+    c.awb_gains = (REDGAIN,BLUEGAIN) # 0.0...8.0  (red,blue)
 
     c.exposure_mode = 'off'
  #   c.iso= 100 # don't set or exposure goes auto
@@ -204,16 +206,24 @@ def getparams(c:PiCamera):
 
     img = grabframe(c)
     print('image size',img.shape)
-    print('analog gain', float(c.analog_gain),
-          '   digital gain',float(c.digital_gain))
+    print('analog gain', float(c.analog_gain))
+
+     #print('digital gain',float(c.digital_gain))
+    assert np.testing.assert_allclose(c.digital_gain, 1.)
 
     #print('auto white balance:',c.awb_mode)
     assert c.awb_mode=='off'
 
-    print('AWB Red gain',float(c.awb_gains[0]),
-          '   AWB Blue gain',float(c.awb_gains[1]))
-    print('brightness',c.brightness,
-          '     contrast',c.contrast)
+    #print('AWB Red gain',float(c.awb_gains[0]),
+    #      '   AWB Blue gain',float(c.awb_gains[1]))
+    np.testing.assert_allclose(c.awb_gains,
+                               (REDGAIN,BLUEGAIN),
+                               rtol=0.01)
+
+    #print('brightness',c.brightness,
+    #      '     contrast',c.contrast)
+    assert c.brightness==50
+    assert c.contrast==0
 
     #print('dynamic range compression', c.drc_strength)
     assert c.drc_strength=='off'
