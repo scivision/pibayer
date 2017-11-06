@@ -217,7 +217,7 @@ def getparams(c:PiCamera):
 
     #print('AWB Red gain',float(c.awb_gains[0]),
     #      '   AWB Blue gain',float(c.awb_gains[1]))
-    np.testing.assert_allclose(map(float,c.awb_gains),
+    np.testing.assert_allclose(list(map(float,c.awb_gains)),
                                (REDGAIN,BLUEGAIN),
                                rtol=0.01)
 
