@@ -178,8 +178,9 @@ def setparams(c:PiCamera, exposure_sec:float=None):
     print('camera startup gain autocal')
     sleep(2) # at least 0.5..0.75 seconds to let camera settle to final gain value.
 
+    c.drc_strength = 'off' # in order here
     c.awb_mode ='off' #auto white balance
-    print('AWB gains before settings were',c.awb_gains)
+    print('AWB gains before settings were', map(float,c.awb_gains))
     c.awb_gains = (1,1.) # 0.0...8.0  (red,blue)
 
     c.exposure_mode = 'off'
@@ -190,7 +191,6 @@ def setparams(c:PiCamera, exposure_sec:float=None):
         c.shutter_speed = int(exposure_sec * 1e6)
 #   c.brightness(50)
 #   c.contrast(0)
-    c.drc_strength = 'off'
     c.image_denoise = False
     c.image_effect = 'none'
     c.still_stats=False
