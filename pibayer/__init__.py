@@ -11,6 +11,7 @@ KEY = '/imgs'  # handle to write inside the output file
 CLVL = 1  # ZIP compression level
 REDGAIN = 1.
 BLUEGAIN = 1.
+ISO=100
 
 def pibayerraw(Nimg:int, exposure_sec:float, bit8:bool=False,
                preview=None, outfn:Path=None):
@@ -69,18 +70,21 @@ def writeframe(f, i:int, img:np.ndarray, cam:PiCamera):
     if f is None:
         return
 
-
     assert img.ndim == 2
+    expsec = cam.exposure_speed/1e6
+    shtsec = cam.shutter_speed/1e6
+    again  = float(cam.analog_gain)
 
-    print('writing image #',i,'\r',end="",flush=True)
+    print('writing image #',i,'exp_sec',expsec,'shutter_sec',shtsec,'analog gain',again,
+          '\r',end="",flush=True)
 
     if 'h5py' in str(f.__class__): # HDF5
         f[KEY][i,:,:] = img
     elif 'tifffile' in str(f.__class__): # TIFF
         f.save(img, compress=CLVL,
-               extratags=[(33434,'f',1,cam.exposure_speed/1e6,False),
-                          (37377,'f',1,cam.shutter_speed/1e6,False),
-                          (41991,'f',1,cam.analog_gain,False),
+               extratags=[(33434,'f',1,expsec,False),
+                          (37377,'f',1,shtsec,False),
+                          (41991,'f',3,(again,float(cam.awb_gains[0]),float(cam.awb_gains[1])),False),
                ])
 
 
@@ -186,18 +190,24 @@ def setparams(c:PiCamera, exposure_sec:float):
     # exposure_speed: readonly
 
     print('camera startup gain autocal')
+
+    c.iso = ISO
+
     sleep(2) # at least 0.5..0.75 seconds to let camera settle to final gain value.
 
+    c.shutter_speed = int(exposure_sec * 1e6)
+    c.exposure_mode = 'off'
+
+    awb_gains = c.awb_gains
     c.drc_strength = 'off' # in order here
     c.awb_mode ='off' #auto white balance
-    print('AWB gains before settings were',float(c.awb_gains[0]),float(c.awb_gains[1]))
+    print('auto AWB gains were',
+          float(awb_gains[0]),float(awb_gains[1]))
+    #c.awb_gains = awb_gains
     c.awb_gains = (REDGAIN,BLUEGAIN) # 0.0...8.0  (red,blue)
 
-    c.exposure_mode = 'off'
- #   c.iso= 100 # don't set or exposure goes auto
 
-    c.framerate=1 # [frames/sec] caps maximum shutter length
-    c.shutter_speed = int(exposure_sec * 1e6)
+    c.framerate=30 # [frames/sec] caps maximum shutter length
 #   c.brightness(50)
 #   c.contrast(0)
     c.image_denoise = False
@@ -226,9 +236,9 @@ def getparams(c:PiCamera):
 
     #print('AWB Red gain',float(c.awb_gains[0]),
     #      '   AWB Blue gain',float(c.awb_gains[1]))
-    np.testing.assert_allclose(list(map(float,c.awb_gains)),
-                               (REDGAIN,BLUEGAIN),
-                               rtol=0.01)
+    #np.testing.assert_allclose(list(map(float,c.awb_gains)),
+    #                           (REDGAIN,BLUEGAIN),
+    #                           rtol=0.01)
 
     #print('brightness',c.brightness,
     #      '     contrast',c.contrast)
@@ -257,7 +267,7 @@ def getparams(c:PiCamera):
     assert c.image_effect=='none'
 
     #print('ISO', c.iso)
-    assert c.iso==0
+    assert c.iso == ISO
 
 #    print('exposure metering mode', c.meter_mode)
     assert c.meter_mode=='average'
