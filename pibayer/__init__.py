@@ -134,7 +134,6 @@ def _preview(cam:PiCamera, preview, bit8:bool):
         ax=fg.gca()
 
         img = grabframe(cam, bit8)
-        print('image shape',img.shape)
 
         hi = ax.imshow(img, cmap='gray')
         fg.colorbar(hi,ax=ax)
@@ -197,6 +196,12 @@ def setparams(c:PiCamera, exposure_sec:float=None):
 
 
 def getparams(c:PiCamera):
+    """
+    need to read new image to update values set in prior step!
+    """
+
+    img = grabframe(c)
+    print('image size',img.shape)
     print('analog gain', float(c.analog_gain),
           '   digital gain',float(c.digital_gain))
     print('auto white balance:',c.awb_mode)
