@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 from pathlib import Path
 from datetime import datetime
 import numpy as np
@@ -206,7 +207,10 @@ def getparams(c:PiCamera):
 
     img = grabframe(c)
     print('image size',img.shape)
+
     print('analog gain', float(c.analog_gain))
+    if not 0.9 < c.analog_gain < 1.1:
+        logging.warning('analog gain')
 
      #print('digital gain',float(c.digital_gain))
     np.testing.assert_allclose(float(c.digital_gain), 1.,
@@ -237,6 +241,8 @@ def getparams(c:PiCamera):
 
     print('exposure speed [ms]',c.exposure_speed/1e3,
           '   shutter speed [ms]',c.shutter_speed/1e3)
+    assert c.shutter_speed > 0
+
     print('framerate [frames/sec]',c.framerate)
 
     #print('image denoise', c.image_denoise)
@@ -251,8 +257,11 @@ def getparams(c:PiCamera):
 #    print('exposure metering mode', c.meter_mode)
     assert c.meter_mode=='average'
 
-    print('rotation angle', c.rotation)
-    print('saturation', c.saturation)
+   # print('rotation angle', c.rotation)
+    assert c.rotation==0
+
+    #print('saturation', c.saturation)
+    assert c.saturation==0
 
     #print('Sensor mode',c.sensor_mode)
     assert c.sensor_mode==0
