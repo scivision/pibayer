@@ -6,20 +6,19 @@
 raspicam-raw-bayer
 ======================
 Acquire RAW Bayer-masked images with Raspberry Pi camera (before demosaicking).
-
-* writes HDF5 or TIFF compressed image stacks.
+Writes HDF5 or TIFF compressed image stacks.
 
 :author: Michael Hirsch, Ph.D.
 
 .. contents::
 
-setup
+Install
 =======
-This is meant to be installed directly on the Raspberry Pi::
+To be installed directly on the Raspberry Pi::
 
     apt install python3-numpy python3-matplotlib python3-picamera
 
-    python3 setup.py develop --user
+    pip3 install -e . --user
 
 Examples
 ========
