@@ -109,8 +109,16 @@ def writeframe(f, i:int, img:np.ndarray, cam:PiCamera):
     if f is None:
         return
 
-    if 'h5py' in str(f.__class__): # HDF5
+    if isinstance(f,Path) and f.suffix=='.nc':
+        import xarray
+        imgs = xarray.DataArray(img,
+                                attrs={'exp_sec',expsec,'shutter_sec',shtsec,'analog gain',again})
+        imgs.to_netcdf(f, mode='a', group=KEY)
+    elif 'h5py' in str(f.__class__): # HDF5
         f[KEY][i,:,:] = img
+        f['exposure_sec']=expsec
+        f['shutter_sec'] = shtsec
+        f['analog_gain'] = again
     elif 'tifffile' in str(f.__class__): # TIFF
         f.save(img, compress=CLVL,
                extratags=[(33434,'f',1,expsec,False),
@@ -137,12 +145,15 @@ def _writesetup(outfn:Path, Nimg:int, img:np.ndarray):
 
     outfn = Path(outfn).expanduser()
 
-    # note: both these file types must be .close() when done!
-    if outfn.suffix == '.h5':
+    # note: these file types must be .close() when done!
+    if outfn.suffix == '.nc':
+        f=outfn
+    elif outfn.suffix == '.h5':
         import h5py
         f = h5py.File(outfn,'w',libver='earliest')
         f.create_dataset(KEY,
                          shape=(Nimg,img.shape[0],img.shape[1]),
+                         maxshape=(None,img.shape[0],img.shape[1]),
                          dtype=img.dtype,
                          compression='gzip',
                          compression_opts=CLVL,

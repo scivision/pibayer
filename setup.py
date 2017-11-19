@@ -21,7 +21,7 @@ setup(name='pibayer',
       'Programming Language :: Python :: 3',
       ],
       install_requires=['picamera','numpy','nose'],
-      extras_require={'io':['tifffile==0.6','h5py'],
+      extras_require={'io':['tifffile==0.6','h5py','netcdf4','xarray'],
                       'plot':['matplotlib'],},
       python_requires='>=3.6',
 	  )
