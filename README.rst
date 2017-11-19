@@ -16,7 +16,7 @@ Install
 =======
 To be installed directly on the Raspberry Pi::
 
-    apt install python3-numpy python3-matplotlib python3-picamera
+    apt install python3-numpy
 
     pip3 install -e . --user
 
