@@ -14,11 +14,9 @@ Writes HDF5 or TIFF compressed image stacks.
 
 Install
 =======
-To be installed directly on the Raspberry Pi::
+To be installed directly on the Raspberry Pi, using Python >= 3.5::
 
-    apt install python3-numpy
-
-    pip3 install -e . --user
+    pip3 install -e .
 
 Examples
 ========

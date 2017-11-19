@@ -14,7 +14,7 @@ raspi-config, set locale: en_US.UTF-8 UTF-8  and same for default locale, then R
 Michael Hirsch, Ph.D.
 https://scivision.co
 """
-from pibayer import pibayerraw,bayerseq
+from pibayer import bayerseq
 
 if __name__ == '__main__':
 # NOTE: Didn't use SIGINT to allow camera to cleanup/close--avoid GPU memory leaks!
@@ -37,10 +37,7 @@ if __name__ == '__main__':
 
     print('press Ctrl C  to end program')
 
-    if 0:
-        img = pibayerraw(p.numimg, p.exposure, p.bit8, preview, p.outfn)
-    else:
-        img = bayerseq(p.numimg, p.exposure, p.bit8, preview, p.outfn)
+    img = bayerseq(p.numimg, p.exposure, p.bit8, preview, p.outfn)
 
     if 0:
         from matplotlib.pyplot import figure,draw,pause
