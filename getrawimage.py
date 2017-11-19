@@ -14,7 +14,6 @@ raspi-config, set locale: en_US.UTF-8 UTF-8  and same for default locale, then R
 Michael Hirsch, Ph.D.
 https://scivision.co
 """
-from matplotlib.pyplot import figure,show,draw,pause
 from pibayer import pibayerraw,bayerseq
 
 if __name__ == '__main__':
@@ -37,11 +36,14 @@ if __name__ == '__main__':
         preview = None
 
     print('press Ctrl C  to end program')
-    
-    #img = pibayerraw(p.numimg, p.exposure, p.bit8, preview, p.outfn)
-    img = bayerseq(p.numimg, p.exposure, p.bit8, preview, p.outfn)
 
     if 0:
+        img = pibayerraw(p.numimg, p.exposure, p.bit8, preview, p.outfn)
+    else:
+        img = bayerseq(p.numimg, p.exposure, p.bit8, preview, p.outfn)
+
+    if 0:
+        from matplotlib.pyplot import figure,draw,pause
         ax = figure().gca()
         for i in range(img.shape[0]):
             ax.imshow(img[i])
