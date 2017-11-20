@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+req = ['picamera','numpy','xarray','nose']
+# %%
 from setuptools import setup,find_packages
 
 setup(name='pibayer',
@@ -15,7 +17,7 @@ setup(name='pibayer',
       'Topic :: Scientific/Engineering :: Medical Science Apps.',
       'Programming Language :: Python :: 3',
       ],
-      install_requires=['picamera','numpy','xarray','nose'],
+      install_requires=req,
       extras_require={'io':['tifffile','h5py','netcdf4'],
                       'plot':['matplotlib'],},
       python_requires='>=3.5',
