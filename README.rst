@@ -6,39 +6,44 @@
 raspicam-raw-bayer
 ======================
 Acquire RAW Bayer-masked images with Raspberry Pi camera (before demosaicking).
-
-* writes HDF5 or TIFF compressed image stacks.
+Writes HDF5, NetCDF or TIFF compressed image stacks.
 
 :author: Michael Hirsch, Ph.D.
 
 .. contents::
 
-setup
+Install
 =======
-This is meant to be installed directly on the Raspberry Pi::
+To be installed directly on the Raspberry Pi, using Python >= 3.5::
 
-    apt install python3-numpy python3-matplotlib python3-picamera
+    pip3 install -e .
 
-    python3 setup.py develop --user
+To avoid MMAL errors, ``raspi-config`` > Advanced Options > Memory Split should be 128 MB, not 64 MB.
 
 Examples
 ========
+
+Setting of exposure time manually (seconds) is mandatory to avoid mistakes in experiments.
 
 RAW live video display
 ----------------------
 ::
 
-    ./getrawimage.py -a
-    
+    ./getrawimage.py 0.01 -a
+
 Dump image stack to disk
 ------------------------
+NetCDF::
+
+    ./getrawimage.py 0.01 output.nc
+
 HDF5::
 
-    ./getrawimage.py output.h5
-    
+    ./getrawimage.py 0.01 output.h5
+
 TIFF::
 
-    ./getrawimage.py output.tif
+    ./getrawimage.py 0.01 output.tif
 
 
 Command-Line Options
@@ -55,3 +60,13 @@ Reference
 `Constraints on exposure time <http://picamera.readthedocs.io/en/latest/fov.html#camera-modes>`_
 
 
+Notes
+=====
+
+    ValueError: cannot save to a group with the scipy.io.netcdf backend
+
+is because of missing::
+
+    apt install libnetcdf-dev
+
+    pip install netcdf4

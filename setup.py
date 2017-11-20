@@ -1,19 +1,15 @@
 #!/usr/bin/env python
-"""
-On Raspberry Pi:
-
-apt install python3-{nose,numpy,matplotlib,picamera,h5py}
-
-pip install tifffile==0.6
-"""
-from setuptools import setup
+req = ['picamera','numpy','xarray','nose']
+# %%
+from setuptools import setup,find_packages
 
 setup(name='pibayer',
-      packages=['pibayer'],
+      packages=find_packages(),
       author='Michael Hirsch, Ph.D.',
-      version='0.5.1',
-	  description='Acquire raw Bayer-masked image from Raspberry Pi camera and write to HDF5 or TIFF.',
-	  url='https://github.com/scivision/raspicam-raw-bayer',
+      version='0.6.0',
+      description='Acquire raw Bayer-masked image from Raspberry Pi camera and write image stack to HDF5 or TIFF.',
+      long_description=open('README.rst').read(),
+      url='https://github.com/scivision/raspicam-raw-bayer',
       classifiers=[
       'Intended Audience :: Science/Research',
       'Development Status :: 4 - Beta',
@@ -21,7 +17,8 @@ setup(name='pibayer',
       'Topic :: Scientific/Engineering :: Medical Science Apps.',
       'Programming Language :: Python :: 3',
       ],
-      install_requires=['picamera','numpy','nose'],
-      extras_require={'write':['tifffile','h5py'],
-                      'plot':['matplotlib']}
-	  )
+      install_requires=req,
+      extras_require={'io':['tifffile','h5py','netcdf4'],
+                      'plot':['matplotlib'],},
+      python_requires='>=3.5',
+      )
