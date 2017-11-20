@@ -14,7 +14,7 @@ raspi-config, set locale: en_US.UTF-8 UTF-8  and same for default locale, then R
 Michael Hirsch, Ph.D.
 https://scivision.co
 """
-from pibayer import bayerseq
+from pibayer import bayerseq,writeframes
 
 if __name__ == '__main__':
 # NOTE: Didn't use SIGINT to allow camera to cleanup/close--avoid GPU memory leaks!
@@ -28,18 +28,13 @@ if __name__ == '__main__':
     p.add_argument('-p','--plot',help='show via Matplotlib (slow)s',action='store_true')
     p = p.parse_args()
 
-    if p.aim:
-        preview = p.aim
-    elif p.plot:
-        preview = 'mpl'
-    else:
-        preview = None
-
     print('press Ctrl C  to end program')
 
-    img = bayerseq(p.numimg, p.exposure, p.bit8, preview, p.outfn)
+    img = bayerseq(p.numimg, p.exposure)
 
-    if 0:
+    writeframes(p.outfn, img)
+# %%
+    if p.plot:
         from matplotlib.pyplot import figure,draw,pause
         ax = figure().gca()
         for i in range(img.shape[0]):

@@ -130,3 +130,14 @@ def writeframe(f, i:int, img:np.ndarray, cam:PiCamera):
                           (37377,'f',1,shtsec,False),
                           (41991,'f',3,(again,float(cam.awb_gains[0]),float(cam.awb_gains[1])),False),
                ])
+
+
+def updatepreview(img, hi, ht):
+    if hi is not None:
+        from matplotlib.pyplot import draw,pause
+#       tic = time()
+        hi.set_data(img) #2.7 sec
+        ht.set_text(str(datetime.now()))
+        draw()
+        pause(0.01)
+#       print('{:.1f} sec. to update plot'.format(time()-tic))

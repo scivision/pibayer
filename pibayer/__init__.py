@@ -3,11 +3,12 @@ import logging
 from pathlib import Path
 from datetime import datetime
 import numpy as np
+import xarray
 from time import sleep
 from picamera import PiCamera
 import picamera.array
 
-KEY = '/imgs'  # handle to write inside the output file
+KEY = 'imgs'  # handle to write inside the output file
 CLVL = 1  # ZIP compression level
 REDGAIN = 1.
 BLUEGAIN = 1.
@@ -22,8 +23,7 @@ def _outconv(cam,Nimg,img):
             i+=1
 
 
-def bayerseq(Nimg:int, exposure_sec:float, bit8:bool=False,
-               preview=None, outfn:Path=None):
+def bayerseq(Nimg:int, exposure_sec:float):
 
     with PiCamera() as cam: #load camera driver
         setparams(cam, exposure_sec) #wait till after sleep() so that gains settle before turning off auto
@@ -39,15 +39,22 @@ def bayerseq(Nimg:int, exposure_sec:float, bit8:bool=False,
 
         print('image',Nimg,'/',Nimg,'exposure [sec.]',cam.exposure_speed/1e6)
 
+        attrs = {
+        'exposure_sec': cam.exposure_speed/1e6,
+        'shutter_sec': cam.shutter_speed/1e6,
+        'analog_gain': float(cam.analog_gain),
+        'awb_gains': np.array(cam.awb_gains).astype(float)
+        }
+
+    # 20% less space and *faster* than not doing this!
+    img = xarray.DataArray(img,attrs=attrs)
+
     return img
 
 
-def writeframes(outfn:Path, img:np.ndarray, cam:PiCamera):
+def writeframes(outfn:Path, img:np.ndarray):
     """writes image stack to disk"""
-    assert img.ndim == 2
-    expsec = cam.exposure_speed/1e6
-    shtsec = cam.shutter_speed/1e6
-    again  = float(cam.analog_gain)
+    assert img.ndim == 3
 
     if outfn is None:
         return
@@ -57,36 +64,34 @@ def writeframes(outfn:Path, img:np.ndarray, cam:PiCamera):
     print('writing',outfn)
 
     if outfn.suffix=='.nc':
-        import xarray
-        imgs = xarray.DataArray(img,
-                                attrs={'exp_sec',expsec,'shutter_sec',shtsec,'analog gain',again})
-        imgs.to_netcdf(outfn, mode='a', group=KEY)
+        #chunksizes made only few % difference in save time and size
+        #fletcher32 had no noticable impact
+        #complvl+1 had little useful impact
+        enc = {KEY:{'zlib':True,'complevel':CLVL,'fletcher32':True,
+                    'chunksizes':(1,img.shape[1],img.shape[2])}}
+        imgs.to_netcdf(str(outfn), mode='w', encoding=enc)
     elif outfn.suffix=='.h5': # HDF5
         import h5py
-        with h5py.file(outfn,'w') as f:
-            f[KEY] = img
-            f['exposure_sec']=expsec
-            f['shutter_sec'] = shtsec
-            f['analog_gain'] = again
+        with h5py.File(outfn,'w') as f:
+            f.create_dataset(KEY,
+                 data=img,
+                 shape=img.shape,
+                 dtype=img.dtype,
+                 compression='gzip',
+                 compression_opts=CLVL,
+                 chunks=(1,img.shape[1],img.shape[2]))
+
+            for k,v in img.attrs.items():
+                f[k] = v
     elif outfn.suffix in ('.tif','.tiff'): # TIFF
         import tifffile
         with tifffile.TiffWriter(str(outfn)) as f:
             f.save(img, compress=CLVL,
-               extratags=[(33434,'f',1,expsec,False),
-                          (37377,'f',1,shtsec,False),
-                          (41991,'f',3,(again,float(cam.awb_gains[0]),float(cam.awb_gains[1])),False),
+               extratags=[(33434,'f',1,img.attrs['exposure_sec'],False),
+                          (37377,'f',1,img.attrs['shutter_sec'],False),
+                          (41991,'f',3,(img.attrs['analog_gain'],
+                          img.attrs['awb_gains'][0],img.attrs['awb_gains'][1]),False),
                ])
-
-
-def updatepreview(img, hi, ht):
-    if hi is not None:
-        from matplotlib.pyplot import draw,pause
-#       tic = time()
-        hi.set_data(img) #2.7 sec
-        ht.set_text(str(datetime.now()))
-        draw()
-        pause(0.01)
-#       print('{:.1f} sec. to update plot'.format(time()-tic))
 
 
 def sixteen2eight(I:np.ndarray, Clim:tuple) -> np.ndarray:
