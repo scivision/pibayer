@@ -31,7 +31,7 @@ RAW live video display
 
 Dump image stack to disk
 ------------------------
-NetCDF: This method has the best performance (fastest write, smallest file)::
+NetCDF::
 
     ./getrawimage.py 0.01 output.nc
 

@@ -46,8 +46,7 @@ def bayerseq(Nimg:int, exposure_sec:float):
         'awb_gains': np.array(cam.awb_gains).astype(float)
         }
 
-    # 20% less space and *faster* than not doing this!
-    img = xarray.DataArray(img,attrs=attrs)
+    img = xarray.DataArray(img,name=KEY,attrs=attrs)
 
     return img
 
@@ -69,7 +68,7 @@ def writeframes(outfn:Path, img:np.ndarray):
         #complvl+1 had little useful impact
         enc = {KEY:{'zlib':True,'complevel':CLVL,'fletcher32':True,
                     'chunksizes':(1,img.shape[1],img.shape[2])}}
-        imgs.to_netcdf(str(outfn), mode='w', encoding=enc)
+        img.to_netcdf(str(outfn), mode='w', encoding=enc)
     elif outfn.suffix=='.h5': # HDF5
         import h5py
         with h5py.File(outfn,'w') as f:
@@ -79,7 +78,8 @@ def writeframes(outfn:Path, img:np.ndarray):
                  dtype=img.dtype,
                  compression='gzip',
                  compression_opts=CLVL,
-                 chunks=(1,img.shape[1],img.shape[2]))
+                 chunks=(1,img.shape[1],img.shape[2]),
+                 shuffle=True,fletcher32=True)
 
             for k,v in img.attrs.items():
                 f[k] = v
