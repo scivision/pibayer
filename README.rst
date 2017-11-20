@@ -18,6 +18,8 @@ To be installed directly on the Raspberry Pi, using Python >= 3.5::
 
     pip3 install -e .
 
+To avoid MMAL errors, ``raspi-config`` > Advanced Options > Memory Split should be 128 MB, not 64 MB.
+
 Examples
 ========
 

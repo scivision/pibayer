@@ -24,7 +24,6 @@ if __name__ == '__main__':
     p.add_argument('outfn',help='HDF5 or TIFF file to write image stack to',nargs='?')
     p.add_argument('-n','--numimg',help='number of images to write to disk',type=int,default=10)
     p.add_argument('-8','--bit8',help="convert output to 8-bit",action='store_true')
-    p.add_argument('-a','--aim',help='seconds to preview fast GPU-based preview for aiming',type=float)
     p.add_argument('-p','--plot',help='show via Matplotlib (slow)s',action='store_true')
     p = p.parse_args()
 
@@ -37,6 +36,6 @@ if __name__ == '__main__':
     if p.plot:
         from matplotlib.pyplot import figure,draw,pause
         ax = figure().gca()
-        for i in range(img.shape[0]):
-            ax.imshow(img[i])
+        for I in img:
+            ax.imshow(I)
             draw();pause(0.05)
