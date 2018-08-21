@@ -15,8 +15,17 @@ python3 -m pip install -e .
 ```
 
 Running the self-test must be done on a Raspberry Pi with camera module:
-```python
+```sh
+python3 -m pip install -e .[tests]
+
 python3 -m pytest
+```
+
+To install advanced (HDF5, NetCDF4) image writing libraries:
+```sh
+apt install libhdf5-dev
+
+python3 -m pip install -e .[io]
 ```
 
 ### Tips

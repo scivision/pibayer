@@ -27,7 +27,7 @@ def writeframes(outfn: Path, img: xarray.DataArray):
         import h5py
         with h5py.File(outfn, 'w') as f:
             f.create_dataset(KEY,
-                             data=img,
+                             data=img.values,
                              shape=img.shape,
                              dtype=img.dtype,
                              compression='gzip',
@@ -37,6 +37,6 @@ def writeframes(outfn: Path, img: xarray.DataArray):
 
             for k, v in img.attrs.items():
                 f[k] = v
-    elif outfn.suffix in ('.tif', '.tiff'):  # TIFF
+    else:  # assume stacked image format
         import imageio
-        imageio.imsave(outfn, img)
+        imageio.mimwrite(outfn, img.values)
