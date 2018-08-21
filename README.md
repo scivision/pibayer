@@ -14,6 +14,11 @@ To be installed directly on the Raspberry Pi, using Python &ge; 3.5:
 python3 -m pip install -e .
 ```
 
+Running the self-test must be done on a Raspberry Pi with camera module:
+```python
+python3 -m pytest
+```
+
 ### Tips
 * Avoid MMAL errors: `raspi-config` &rarr; Advanced Options &rarr; Memory Split should be 128 MB, not 64 MB.
 * Fix error "ImportError: libf77blas.so.3: cannot open shared object file: No such file or directory" by:
