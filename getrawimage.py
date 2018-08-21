@@ -14,17 +14,18 @@ raspi-config, set locale: en_US.UTF-8 UTF-8  and same for default locale, then R
 Michael Hirsch, Ph.D.
 https://scivision.co
 """
-from pibayer import bayerseq,writeframes
+from pibayer import bayerseq, writeframes
+from argparse import ArgumentParser
 
-if __name__ == '__main__':
-# NOTE: Didn't use SIGINT to allow camera to cleanup/close--avoid GPU memory leaks!
-    from argparse import ArgumentParser
+
+def main():
+    # NOTE: Didn't use SIGINT to allow camera to cleanup/close--avoid GPU memory leaks!
     p = ArgumentParser(description='Raspberry Pi Picamera demo with raw Bayer data')
-    p.add_argument('exposure',help='exposure time [seconds]',type=float)
-    p.add_argument('outfn',help='HDF5 or TIFF file to write image stack to',nargs='?')
-    p.add_argument('-n','--numimg',help='number of images to write to disk',type=int,default=10)
-    p.add_argument('-8','--bit8',help="convert output to 8-bit",action='store_true')
-    p.add_argument('-p','--plot',help='show via Matplotlib (slow)s',action='store_true')
+    p.add_argument('exposure', help='exposure time [seconds]', type=float)
+    p.add_argument('outfn', help='HDF5 or TIFF file to write image stack to', nargs='?')
+    p.add_argument('-n', '--numimg', help='number of images to write to disk', type=int, default=10)
+    p.add_argument('-8', '--bit8', help="convert output to 8-bit", action='store_true')
+    p.add_argument('-p', '--plot', help='show via Matplotlib (slow)s', action='store_true')
     p = p.parse_args()
 
     print('press Ctrl C  to end program')
@@ -34,8 +35,13 @@ if __name__ == '__main__':
     writeframes(p.outfn, img)
 # %%
     if p.plot:
-        from matplotlib.pyplot import figure,draw,pause
+        from matplotlib.pyplot import figure, draw, pause
         ax = figure().gca()
         for I in img:
             ax.imshow(I)
-            draw();pause(0.05)
+            draw()
+            pause(0.05)
+
+
+if __name__ == '__main__':
+    main()
