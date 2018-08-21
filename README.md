@@ -57,7 +57,6 @@ Setting of exposure time manually (seconds) is mandatory to avoid mistakes in ex
 
 * `-a` GPU-based preview, for aiming camera (fast) 
 * `-p` use Matplotlib for slow, live (10 seconds per frame) display 
-* `-e` exp_sec manually set exposure time, up to one second (there are still some auto-set gains) 
 * `-8` output 8-bit array instead of default 10-bit array
 
 ## Notes
