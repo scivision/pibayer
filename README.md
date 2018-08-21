@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/scivision/pibayer.svg?branch=master)](https://travis-ci.com/scivision/pibayer)
 [![Maintainability](https://api.codeclimate.com/v1/badges/66560126d66fb438a9d4/maintainability)](https://codeclimate.com/github/scivision/raspicam-raw-bayer/maintainability)
 
 # Raspicam raw Bayer mask pixels
@@ -10,10 +11,15 @@ Writes HDF5, NetCDF or TIFF compressed image stacks.
 
 To be installed directly on the Raspberry Pi, using Python &ge; 3.5:
 ```sh
-pip3 install -e .
+python3 -m pip install -e .
 ```
 
-To avoid MMAL errors, `raspi-config` &rarr; Advanced Options &rarr; Memory Split should be 128 MB, not 64 MB.
+### Tips
+* Avoid MMAL errors: `raspi-config` &rarr; Advanced Options &rarr; Memory Split should be 128 MB, not 64 MB.
+* Fix error "ImportError: libf77blas.so.3: cannot open shared object file: No such file or directory" by:
+  ```sh
+  apt install libatlas-dev
+  ```
 
 ## Examples
 
