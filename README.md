@@ -1,5 +1,8 @@
 [![Build Status](https://travis-ci.com/scivision/pibayer.svg?branch=master)](https://travis-ci.com/scivision/pibayer)
 [![Maintainability](https://api.codeclimate.com/v1/badges/66560126d66fb438a9d4/maintainability)](https://codeclimate.com/github/scivision/raspicam-raw-bayer/maintainability)
+[![PyPi version](https://img.shields.io/pypi/pyversions/pibayer.svg)](https://pypi.python.org/pypi/pibayer)
+[![PyPi formats](https://img.shields.io/pypi/format/pibayer.svg)](https://pypi.python.org/pypi/pibayer)
+[![PyPi Download stats](http://pepy.tech/badge/pibayer)](http://pepy.tech/project/pibayer)
 
 # Raspicam raw Bayer mask pixels
 
@@ -11,6 +14,8 @@ Writes HDF5, NetCDF or TIFF compressed image stacks.
 
 To be installed directly on the Raspberry Pi, using Python &ge; 3.5:
 ```sh
+apt install python3-numpy
+
 python3 -m pip install -e .
 ```
 
@@ -23,9 +28,7 @@ python3 -m pytest
 
 To install advanced (HDF5, NetCDF4) image writing libraries:
 ```sh
-apt install libhdf5-dev
-
-python3 -m pip install -e .[io]
+apt install python3-netcdf4 python3-h5py
 ```
 
 ### Tips
