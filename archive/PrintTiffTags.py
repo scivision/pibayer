@@ -11,8 +11,8 @@ from argparse import ArgumentParser
 
 def main():
     p = ArgumentParser()
-    p.add_argument('fn', help='TIFF file to print tags from')
-    p.add_argument('-t', '--tags', help='tag numbers to print', nargs='+', type=str)
+    p.add_argument("fn", help="TIFF file to print tags from")
+    p.add_argument("-t", "--tags", help="tag numbers to print", nargs="+", type=str)
     p = p.parse_args()
 
     printtags(p.fn, p.tags)
@@ -23,7 +23,7 @@ def printtags(fn: Path, tlist: list):
 
     with tifffile.TiffFile(str(fn)) as tif:
         for i, page in enumerate(tif):
-            print('\n** Image ', i, ' **')
+            print("\n** Image ", i, " **")
             for tag in page.tags.values():
                 t = tag.name, tag.value
                 if tlist:
@@ -33,5 +33,5 @@ def printtags(fn: Path, tlist: list):
                     print(t[0], t[1])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

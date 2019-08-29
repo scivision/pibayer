@@ -11,5 +11,5 @@ def test_acq_seq():
     assert img.shape[0] == Nimg
 
 
-if __name__ == '__main__':
-    pytest.main(['-xv', __file__])
+if __name__ == "__main__":
+    pytest.main(["-xv", __file__])
