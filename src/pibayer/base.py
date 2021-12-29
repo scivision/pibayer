@@ -1,10 +1,12 @@
-from typing import Tuple
+from __future__ import annotations
 from time import sleep
 import logging
 import xarray
 import numpy as np
+
 from picamera import PiCamera
 import picamera.array
+
 from .utils import sixteen2eight
 
 KEY = "imgs"  # handle to write inside the output file
@@ -13,7 +15,7 @@ BLUEGAIN = 1.0
 ISO = 100
 
 
-def _outconv(cam, Nimg, img):
+def _outconv(cam, Nimg: int, img):
     i = 0
     with picamera.array.PiBayerArray(cam, output_dims=2) as S:
         while i < Nimg:
@@ -48,9 +50,7 @@ def bayerseq(Nimg: int, exposure_sec: float) -> xarray.DataArray:
             "awb_gains": np.array(cam.awb_gains).astype(float),
         }
 
-    img = xarray.DataArray(img, name=KEY, attrs=attrs)
-
-    return img
+    return xarray.DataArray(img, name=KEY, attrs=attrs)
 
 
 def setparams(c: PiCamera, exposure_sec: float):
@@ -82,7 +82,7 @@ def setparams(c: PiCamera, exposure_sec: float):
     c.still_stats = False
 
 
-def getparams(c: PiCamera) -> Tuple[int, int]:
+def getparams(c: PiCamera) -> tuple[int, ...]:
     """
     need to read new image to update values set in prior step!
     """
